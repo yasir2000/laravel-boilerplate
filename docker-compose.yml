@@ -16,8 +16,8 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_DATABASE=laravel_boilerplate
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
     networks:
       - laravel
 
