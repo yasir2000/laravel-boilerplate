@@ -44,3 +44,13 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return Inertia::render('Auth/Register');
 })->name('register');
+
+// HR Management System Route
+Route::get('/hr', function () {
+    return redirect('/hr-app/');
+})->middleware(['auth', 'verified'])->name('hr');
+
+// Serve HR Application (ExtJS)
+Route::get('/hr-app/{path?}', function () {
+    return view('hr-app');
+})->where('path', '.*')->middleware(['auth', 'verified'])->name('hr.app');

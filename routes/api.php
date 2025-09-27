@@ -194,4 +194,115 @@ Route::middleware(['auth:sanctum'])->group(function () {
             return response()->json($data);
         });
     });
+    
+    // HR Management System API Routes
+    Route::prefix('hr')->group(function () {
+        
+        // Department routes
+        Route::prefix('departments')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'index']);
+            Route::post('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'store']);
+            Route::get('/tree', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'tree']);
+            Route::get('/list', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'list']);
+            Route::get('/hierarchy', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'hierarchy']);
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'statistics']);
+            Route::get('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'show']);
+            Route::put('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'update']);
+            Route::delete('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'destroy']);
+            Route::get('/{department}/employees', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'employees']);
+        });
+        
+        // Position routes
+        Route::prefix('positions')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'index']);
+            Route::post('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'store']);
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\PositionController::class, 'statistics']);
+            Route::get('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'show']);
+            Route::put('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'update']);
+            Route::delete('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'destroy']);
+        });
+        
+        // Employee routes
+        Route::prefix('employees')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'index']);
+            Route::post('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'store']);
+            Route::get('/list', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'list']);
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'statistics']);
+            Route::get('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'show']);
+            Route::put('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'update']);
+            Route::delete('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'destroy']);
+            Route::post('/{employee}/restore', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'restore']);
+            Route::get('/{employee}/attendance', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'attendance']);
+        });
+        
+        // Attendance routes
+        Route::prefix('attendance')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'index']);
+            Route::post('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'store']);
+            Route::get('/live', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'live']);
+            Route::get('/history', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'history']);
+            Route::get('/current-status', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'currentStatus']);
+            Route::get('/summary', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'summary']);
+            Route::get('/export', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'export']);
+            Route::post('/check-in', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkIn']);
+            Route::post('/check-out', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkOut']);
+            Route::get('/today', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'today']);
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'statistics']);
+            Route::get('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'show']);
+            Route::put('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'update']);
+            Route::delete('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'destroy']);
+            Route::post('/{attendance}/approve', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'approve']);
+        });
+        
+        // Leave Request routes
+        Route::prefix('leave-requests')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'index']);
+            Route::post('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'store']);
+            Route::post('/draft', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'saveDraft']);
+            Route::get('/pending', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'pending']);
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'statistics']);
+            Route::get('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'show']);
+            Route::put('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'update']);
+            Route::delete('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'destroy']);
+            Route::post('/{leaveRequest}/approve', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'approve']);
+            Route::post('/{leaveRequest}/reject', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'reject']);
+        });
+        
+        // Reports routes
+        Route::prefix('reports')->group(function () {
+            Route::get('/dashboard-kpis', [\App\Http\Controllers\Api\HR\ReportController::class, 'dashboardKpis']);
+            Route::get('/attendance-trends', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceTrends']);
+            Route::get('/department-distribution', [\App\Http\Controllers\Api\HR\ReportController::class, 'departmentDistribution']);
+            Route::get('/employee-performance', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeePerformance']);
+            Route::get('/leave-analysis', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveAnalysis']);
+            Route::get('/attendance-summary', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceSummary']);
+            Route::get('/employee-demographics', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeeDemographics']);
+            Route::get('/leave-types', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveTypes']);
+            Route::get('/export/{type}', [\App\Http\Controllers\Api\HR\ReportController::class, 'export']);
+        });
+        
+        // HR Dashboard
+        Route::get('/dashboard', function () {
+            $stats = [
+                'total_employees' => \App\Models\HR\Employee::where('employment_status', 'active')->count(),
+                'total_departments' => \App\Models\HR\Department::where('is_active', true)->count(),
+                'present_today' => \App\Models\HR\Attendance::whereDate('date', today())
+                    ->where('status', 'present')->count(),
+                'pending_leave_requests' => \App\Models\HR\LeaveRequest::where('status', 'pending')->count(),
+                'new_hires_this_month' => \App\Models\HR\Employee::whereMonth('hire_date', now()->month)
+                    ->whereYear('hire_date', now()->year)->count(),
+                'total_payroll' => \App\Models\HR\Employee::where('employment_status', 'active')->sum('salary'),
+                'departments_without_manager' => \App\Models\HR\Department::whereNull('manager_id')
+                    ->where('is_active', true)->count(),
+                'employees_on_leave' => \App\Models\HR\Employee::where('employment_status', 'on_leave')->count(),
+            ];
+            
+            return response()->json([
+                'success' => true,
+                'data' => $stats,
+                'message' => 'HR dashboard data retrieved successfully'
+            ]);
+        });
+    });
+    
 });
