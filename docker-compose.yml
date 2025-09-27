@@ -7,13 +7,23 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+      - redis
     environment:
+      - APP_NAME="Laravel Boilerplate"
+      - APP_ENV=local
+      - APP_DEBUG=true
       - DB_CONNECTION=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_DATABASE=laravel_boilerplate
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=null
+      - REDIS_PORT=6379
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=mailpit
+      - MAIL_PORT=1025
     networks:
       - laravel
 

@@ -1,27 +1,7 @@
-# Multi-stage build: Frontend assets builder
-FROM node:20-alpine AS frontend-builder
+# Laravel application stage
+FROM php:8.2-cli
 
-WORKDIR /app
-
-# Copy package files
-COPY package.json package-lock.json* ./
-
-# Install frontend dependencies
-RUN npm ci --only=production
-
-# Copy source code for building
-COPY resources ./resources
-COPY vite.config.js ./
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
-
-# Build frontend assets
-RUN npm run build
-
-# Main application stage
-FROM php:8.2-fpm
-
-# Install system dependencies including Node.js
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -32,15 +12,14 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     unzip \
-    # Add Node.js
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
+    nano \
+    && rm -rf /var/lib/apt/lists/*
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions
+# Install PHP extensions including Redis
 RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip
+
+# Install Redis PHP extension
+RUN pecl install redis && docker-php-ext-enable redis
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -51,18 +30,14 @@ WORKDIR /var/www/html
 # Copy composer file first
 COPY composer.json composer.lock* ./
 
-# Install dependencies without scripts/autoloader first
-RUN composer install --no-scripts --no-autoloader --no-dev
-
-# Copy package.json and install npm dependencies
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+# Install PHP dependencies
+RUN composer install --no-scripts --no-autoloader --no-dev --ignore-platform-req=ext-pcntl --ignore-platform-req=ext-posix
 
 # Copy application code
 COPY . .
 
-# Copy built assets from frontend builder stage
-COPY --from=frontend-builder /app/public/build ./public/build
+# Fix git ownership issue
+RUN git config --global --add safe.directory /var/www/html
 
 # Complete composer setup
 RUN composer dump-autoload --optimize
@@ -71,9 +46,6 @@ RUN composer dump-autoload --optimize
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
-
-# Generate application key
-RUN php artisan key:generate
 
 # Create startup script
 RUN echo '#!/bin/bash\nphp artisan migrate --force\nphp artisan serve --host=0.0.0.0 --port=8000' > /start.sh && chmod +x /start.sh

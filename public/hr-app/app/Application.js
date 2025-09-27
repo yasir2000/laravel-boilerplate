@@ -7,15 +7,9 @@ Ext.define('HRApp.Application', {
     
     name: 'HRApp',
     
+    // Simplified requires for ExtJS 6.2.0 compatibility
     requires: [
-        'HRApp.view.main.MainView',
-        'HRApp.view.main.MainController',
-        'HRApp.view.main.MainModel',
-        'HRApp.view.employee.EmployeePanel',
-        'HRApp.store.EmployeeStore',
-        'HRApp.store.DepartmentStore',
-        'HRApp.model.Employee',
-        'HRApp.model.Department'
+        'HRApp.view.main.MainView'
     ],
     
     // Application configuration

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ExtJS Test</title>
+    
+    <!-- ExtJS CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/theme-triton/resources/theme-triton-all.css">
+    
+    <!-- ExtJS JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-all.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/theme-triton/theme-triton.js"></script>
+</head>
+<body>
+    <div id="test-div">Loading ExtJS...</div>
+
+    <script type="text/javascript">
+        console.log('Script starting...');
+        console.log('Ext object:', typeof Ext);
+        
+        if (typeof Ext !== 'undefined') {
+            console.log('ExtJS Version:', Ext.getVersion().toString());
+            
+            Ext.onReady(function() {
+                console.log('ExtJS is ready!');
+                
+                // Create a simple panel to test
+                Ext.create('Ext.panel.Panel', {
+                    renderTo: 'test-div',
+                    width: 400,
+                    height: 200,
+                    title: 'ExtJS Test Panel',
+                    html: '<p>ExtJS is working correctly!</p>',
+                    style: {
+                        margin: '20px'
+                    }
+                });
+            });
+        } else {
+            console.error('ExtJS is not loaded!');
+            document.getElementById('test-div').innerHTML = 'ERROR: ExtJS failed to load!';
+        }
+    </script>
+</body>
+</html>
