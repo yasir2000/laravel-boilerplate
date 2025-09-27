@@ -1,6 +1,27 @@
+# Multi-stage build: Frontend assets builder
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install frontend dependencies
+RUN npm ci --only=production
+
+# Copy source code for building
+COPY resources ./resources
+COPY vite.config.js ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+
+# Build frontend assets
+RUN npm run build
+
+# Main application stage
 FROM php:8.2-fpm
 
-# Install system dependencies
+# Install system dependencies including Node.js
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -10,7 +31,10 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     zip \
-    unzip
+    unzip \
+    # Add Node.js
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -25,13 +49,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copy composer file first
-COPY composer.json ./
+COPY composer.json composer.lock* ./
 
 # Install dependencies without scripts/autoloader first
 RUN composer install --no-scripts --no-autoloader --no-dev
 
+# Copy package.json and install npm dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+
 # Copy application code
 COPY . .
+
+# Copy built assets from frontend builder stage
+COPY --from=frontend-builder /app/public/build ./public/build
 
 # Complete composer setup
 RUN composer dump-autoload --optimize
