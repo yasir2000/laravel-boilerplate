@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('code', 20)->unique();
             $table->text('description')->nullable();
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->unsignedBigInteger('manager_id')->nullable();
+            $table->uuid('manager_id')->nullable();
             $table->string('location', 100)->nullable();
             $table->decimal('budget', 15, 2)->nullable();
             $table->integer('max_employees')->nullable();

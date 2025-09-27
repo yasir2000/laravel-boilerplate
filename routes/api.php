@@ -195,93 +195,152 @@ Route::middleware(['auth:sanctum'])->group(function () {
         });
     });
     
-    // HR Management System API Routes
-    Route::prefix('hr')->group(function () {
+    // HR Management System API Routes - Protected with Authentication
+    Route::prefix('hr')->middleware(['auth:sanctum'])->group(function () {
         
         // Department routes
         Route::prefix('departments')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'index']);
-            Route::post('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'store']);
-            Route::get('/tree', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'tree']);
-            Route::get('/list', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'list']);
-            Route::get('/hierarchy', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'hierarchy']);
-            Route::get('/statistics', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'statistics']);
-            Route::get('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'show']);
-            Route::put('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'update']);
-            Route::delete('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'destroy']);
-            Route::get('/{department}/employees', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'employees']);
+            Route::get('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'index'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'store'])
+                ->middleware('hr.permission:hr:departments:create');
+            Route::get('/tree', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'tree'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/list', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'list'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/hierarchy', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'hierarchy'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'statistics'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'show'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::put('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'update'])
+                ->middleware('hr.permission:hr:departments:update');
+            Route::delete('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'destroy'])
+                ->middleware('hr.permission:hr:departments:delete');
+            Route::get('/{department}/employees', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'employees'])
+                ->middleware('hr.permission:hr:departments:view');
         });
         
         // Position routes
         Route::prefix('positions')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'index']);
-            Route::post('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'store']);
-            Route::get('/statistics', [\App\Http\Controllers\Api\HR\PositionController::class, 'statistics']);
-            Route::get('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'show']);
-            Route::put('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'update']);
-            Route::delete('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'destroy']);
+            Route::get('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'index'])
+                ->middleware('hr.permission:hr:positions:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'store'])
+                ->middleware('hr.permission:hr:positions:create');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\PositionController::class, 'statistics'])
+                ->middleware('hr.permission:hr:positions:view');
+            Route::get('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'show'])
+                ->middleware('hr.permission:hr:positions:view');
+            Route::put('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'update'])
+                ->middleware('hr.permission:hr:positions:update');
+            Route::delete('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'destroy'])
+                ->middleware('hr.permission:hr:positions:delete');
         });
         
-        // Employee routes
+        // Employee routes - with contextual permissions
         Route::prefix('employees')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'index']);
-            Route::post('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'store']);
-            Route::get('/list', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'list']);
-            Route::get('/statistics', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'statistics']);
-            Route::get('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'show']);
-            Route::put('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'update']);
-            Route::delete('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'destroy']);
-            Route::post('/{employee}/restore', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'restore']);
-            Route::get('/{employee}/attendance', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'attendance']);
+            Route::get('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'index'])
+                ->middleware('hr.permission:hr:employees:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'store'])
+                ->middleware('hr.permission:hr:employees:create');
+            Route::get('/list', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'list'])
+                ->middleware('hr.permission:hr:employees:view');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'statistics'])
+                ->middleware('hr.permission:hr:employees:view');
+            Route::get('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'show'])
+                ->middleware(['hr.permission:hr:employees:view', 'hr.context:own']);
+            Route::put('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'update'])
+                ->middleware(['hr.permission:hr:employees:update', 'hr.context:own']);
+            Route::delete('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'destroy'])
+                ->middleware('hr.permission:hr:employees:delete');
+            Route::post('/{employee}/restore', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'restore'])
+                ->middleware('hr.permission:hr:employees:update');
+            Route::get('/{employee}/attendance', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'attendance'])
+                ->middleware(['hr.permission:hr:attendance:view', 'hr.context:team']);
         });
         
-        // Attendance routes
+        // Attendance routes - with contextual permissions
         Route::prefix('attendance')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'index']);
-            Route::post('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'store']);
-            Route::get('/live', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'live']);
-            Route::get('/history', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'history']);
-            Route::get('/current-status', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'currentStatus']);
-            Route::get('/summary', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'summary']);
-            Route::get('/export', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'export']);
-            Route::post('/check-in', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkIn']);
-            Route::post('/check-out', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkOut']);
-            Route::get('/today', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'today']);
-            Route::get('/statistics', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'statistics']);
-            Route::get('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'show']);
-            Route::put('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'update']);
-            Route::delete('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'destroy']);
-            Route::post('/{attendance}/approve', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'approve']);
+            Route::get('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'index'])
+                ->middleware('hr.permission:hr:attendance:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'store'])
+                ->middleware('hr.permission:hr:attendance:create');
+            Route::get('/live', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'live'])
+                ->middleware('hr.permission:hr:attendance:view-all');
+            Route::get('/history', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'history'])
+                ->middleware(['hr.permission:hr:attendance:view', 'hr.context:own']);
+            Route::get('/current-status', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'currentStatus'])
+                ->middleware(['hr.permission:hr:attendance:view-own']);
+            Route::get('/summary', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'summary'])
+                ->middleware('hr.permission:hr:attendance:view');
+            Route::get('/export', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'export'])
+                ->middleware('hr.permission:hr:reports:export');
+            Route::post('/check-in', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkIn'])
+                ->middleware('hr.permission:hr:attendance:create');
+            Route::post('/check-out', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkOut'])
+                ->middleware('hr.permission:hr:attendance:create');
+            Route::get('/today', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'today'])
+                ->middleware(['hr.permission:hr:attendance:view-own']);
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'statistics'])
+                ->middleware('hr.permission:hr:attendance:view');
+            Route::get('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'show'])
+                ->middleware(['hr.permission:hr:attendance:view', 'hr.context:own']);
+            Route::put('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'update'])
+                ->middleware(['hr.permission:hr:attendance:update', 'hr.context:team']);
+            Route::delete('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'destroy'])
+                ->middleware('hr.permission:hr:attendance:delete');
+            Route::post('/{attendance}/approve', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'approve'])
+                ->middleware('hr.permission:hr:attendance:approve');
         });
         
-        // Leave Request routes
+        // Leave Request routes - with contextual permissions
         Route::prefix('leave-requests')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'index']);
-            Route::post('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'store']);
-            Route::post('/draft', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'saveDraft']);
-            Route::get('/pending', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'pending']);
-            Route::get('/statistics', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'statistics']);
-            Route::get('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'show']);
-            Route::put('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'update']);
-            Route::delete('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'destroy']);
-            Route::post('/{leaveRequest}/approve', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'approve']);
-            Route::post('/{leaveRequest}/reject', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'reject']);
+            Route::get('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'index'])
+                ->middleware('hr.permission:hr:leave:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'store'])
+                ->middleware('hr.permission:hr:leave:create');
+            Route::post('/draft', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'saveDraft'])
+                ->middleware('hr.permission:hr:leave:create');
+            Route::get('/pending', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'pending'])
+                ->middleware('hr.permission:hr:leave:approve');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'statistics'])
+                ->middleware('hr.permission:hr:leave:view');
+            Route::get('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'show'])
+                ->middleware(['hr.permission:hr:leave:view', 'hr.context:own']);
+            Route::put('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'update'])
+                ->middleware(['hr.permission:hr:leave:update', 'hr.context:own']);
+            Route::delete('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'destroy'])
+                ->middleware(['hr.permission:hr:leave:delete', 'hr.context:own']);
+            Route::post('/{leaveRequest}/approve', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'approve'])
+                ->middleware('hr.permission:hr:leave:approve');
+            Route::post('/{leaveRequest}/reject', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'reject'])
+                ->middleware('hr.permission:hr:leave:reject');
         });
         
-        // Reports routes
+        // Reports routes - protected with proper permissions
         Route::prefix('reports')->group(function () {
-            Route::get('/dashboard-kpis', [\App\Http\Controllers\Api\HR\ReportController::class, 'dashboardKpis']);
-            Route::get('/attendance-trends', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceTrends']);
-            Route::get('/department-distribution', [\App\Http\Controllers\Api\HR\ReportController::class, 'departmentDistribution']);
-            Route::get('/employee-performance', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeePerformance']);
-            Route::get('/leave-analysis', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveAnalysis']);
-            Route::get('/attendance-summary', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceSummary']);
-            Route::get('/employee-demographics', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeeDemographics']);
-            Route::get('/leave-types', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveTypes']);
-            Route::get('/export/{type}', [\App\Http\Controllers\Api\HR\ReportController::class, 'export']);
+            Route::get('/dashboard-kpis', [\App\Http\Controllers\Api\HR\ReportController::class, 'dashboardKpis'])
+                ->middleware('hr.permission:hr:dashboard:view');
+            Route::get('/attendance-trends', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceTrends'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/department-distribution', [\App\Http\Controllers\Api\HR\ReportController::class, 'departmentDistribution'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/employee-performance', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeePerformance'])
+                ->middleware('hr.permission:hr:reports:advanced');
+            Route::get('/leave-analysis', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveAnalysis'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/attendance-summary', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceSummary'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/employee-demographics', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeeDemographics'])
+                ->middleware('hr.permission:hr:reports:advanced');
+            Route::get('/leave-types', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveTypes'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/export/{type}', [\App\Http\Controllers\Api\HR\ReportController::class, 'export'])
+                ->middleware('hr.permission:hr:reports:export');
         });
         
-        // HR Dashboard
+        // HR Dashboard - Protected
         Route::get('/dashboard', function () {
             $stats = [
                 'total_employees' => \App\Models\HR\Employee::where('employment_status', 'active')->count(),
@@ -302,7 +361,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'data' => $stats,
                 'message' => 'HR dashboard data retrieved successfully'
             ]);
-        });
+        })->middleware('hr.permission:hr:dashboard:view');
     });
     
 });
