@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen bg-gray-100" :class="currentLanguage === 'ar' ? 'rtl' : 'ltr'">
     <!-- Navigation -->
     <nav class="bg-white border-b border-gray-100">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+        <div class="flex justify-between h-16" :class="currentLanguage === 'ar' ? 'flex-row-reverse' : 'flex-row'">
           <div class="flex">
             <!-- Logo -->
             <div class="shrink-0 flex items-center">
@@ -28,6 +28,19 @@
 
           <!-- Settings Dropdown -->
           <div class="hidden sm:flex sm:items-center sm:ml-6" v-if="$page.props.auth.user">
+            
+            <!-- Language Toggle -->
+            <div class="mr-3">
+              <button 
+                @click="toggleLanguage" 
+                class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm leading-4 font-medium text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                :title="currentLanguage === 'en' ? 'Switch to Arabic' : 'Switch to English'"
+              >
+                <span class="mr-2">{{ currentLanguage === 'en' ? '🇺🇸' : '🇸🇦' }}</span>
+                {{ currentLanguage === 'en' ? 'EN' : 'AR' }}
+              </button>
+            </div>
+
             <div class="ml-3 relative">
               <Dropdown align="right" width="48">
                 <template #trigger>
@@ -92,4 +105,45 @@
 import { Link } from '@inertiajs/vue3'
 import Dropdown from '@/Components/Dropdown.vue'
 import DropdownLink from '@/Components/DropdownLink.vue'
+import { ref, onMounted, watch } from 'vue'
+
+// Language state
+const currentLanguage = ref('en')
+
+// Load saved language preference
+onMounted(() => {
+  const savedLang = localStorage.getItem('hr-app-language') || 'en'
+  currentLanguage.value = savedLang
+  applyLanguageDirection(savedLang)
+})
+
+// Toggle language between English and Arabic
+const toggleLanguage = () => {
+  const newLang = currentLanguage.value === 'en' ? 'ar' : 'en'
+  currentLanguage.value = newLang
+  localStorage.setItem('hr-app-language', newLang)
+  applyLanguageDirection(newLang)
+}
+
+// Apply RTL/LTR direction
+const applyLanguageDirection = (lang) => {
+  const htmlEl = document.documentElement
+  if (lang === 'ar') {
+    htmlEl.dir = 'rtl'
+    htmlEl.lang = 'ar'
+    // Add RTL classes to body for Tailwind
+    document.body.classList.add('rtl')
+    document.body.classList.remove('ltr')
+  } else {
+    htmlEl.dir = 'ltr'
+    htmlEl.lang = 'en'
+    document.body.classList.add('ltr')
+    document.body.classList.remove('rtl')
+  }
+}
+
+// Watch for language changes
+watch(currentLanguage, (newLang) => {
+  applyLanguageDirection(newLang)
+})
 </script>

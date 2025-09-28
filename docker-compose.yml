@@ -8,6 +8,10 @@ services:
     depends_on:
       - postgres
       - redis
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
     environment:
       - APP_NAME="Laravel Boilerplate"
       - APP_ENV=local

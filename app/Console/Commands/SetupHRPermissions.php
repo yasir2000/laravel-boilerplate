@@ -72,6 +72,18 @@ class SetupHRPermissions extends Command
             'hr:evaluations:view-all',
             'hr:evaluations:conduct',
             
+            // Team Management
+            'hr:teams:view',
+            'hr:teams:create',
+            'hr:teams:update',
+            'hr:teams:delete',
+            'hr:teams:manage',
+            'hr:teams:assign-members',
+            'hr:teams:assign-lead',
+            'hr:teams:view-performance',
+            'hr:teams:manage-own',
+            'hr:teams:manage-department',
+            
             // Reports and Analytics
             'hr:reports:view',
             'hr:reports:export',
@@ -115,6 +127,7 @@ class SetupHRPermissions extends Command
             'hr:attendance:view', 'hr:attendance:create', 'hr:attendance:update', 'hr:attendance:view-all', 'hr:attendance:approve',
             'hr:leave:view', 'hr:leave:create', 'hr:leave:update', 'hr:leave:view-all', 'hr:leave:approve', 'hr:leave:reject',
             'hr:evaluations:view', 'hr:evaluations:create', 'hr:evaluations:update', 'hr:evaluations:view-all', 'hr:evaluations:conduct',
+            'hr:teams:view', 'hr:teams:create', 'hr:teams:update', 'hr:teams:delete', 'hr:teams:manage', 'hr:teams:assign-members', 'hr:teams:assign-lead', 'hr:teams:view-performance',
             'hr:reports:view', 'hr:reports:export', 'hr:reports:advanced',
             'hr:dashboard:view', 'hr:dashboard:advanced',
             'hr:files:view', 'hr:files:upload', 'hr:files:download', 'hr:files:view-sensitive',
@@ -131,6 +144,7 @@ class SetupHRPermissions extends Command
             'hr:attendance:view', 'hr:attendance:view-team', 'hr:attendance:approve',
             'hr:leave:view', 'hr:leave:view-team', 'hr:leave:approve', 'hr:leave:reject',
             'hr:evaluations:view', 'hr:evaluations:create', 'hr:evaluations:update', 'hr:evaluations:view-team', 'hr:evaluations:conduct',
+            'hr:teams:view', 'hr:teams:create', 'hr:teams:update', 'hr:teams:manage-department', 'hr:teams:assign-members', 'hr:teams:view-performance',
             'hr:reports:view',
             'hr:dashboard:view',
             'hr:files:view', 'hr:files:upload', 'hr:files:download',
@@ -161,6 +175,7 @@ class SetupHRPermissions extends Command
             'hr:attendance:view', 'hr:attendance:view-team',
             'hr:leave:view', 'hr:leave:view-team', 'hr:leave:approve',
             'hr:evaluations:view', 'hr:evaluations:conduct', 'hr:evaluations:view-team',
+            'hr:teams:view', 'hr:teams:manage-own', 'hr:teams:view-performance',
             'hr:dashboard:view',
             'hr:files:view',
         ];

@@ -102,9 +102,19 @@ Ext.define('HRApp.view.main.MainController', {
         this.createModuleWindow('attendance', 'Attendance Management', 'fa fa-clock-o', 'HRApp.view.attendance.AttendancePanel');
     },
 
+    // Dashboard
+    onDashboardClick: function() {
+        this.createModuleWindow('dashboard', 'HR Dashboard', 'fa fa-dashboard', 'HRApp.view.dashboard.DashboardPanel');
+    },
+
     // Reports and Analytics
     onReportsClick: function() {
         this.createModuleWindow('reports', 'Reports & Analytics', 'fa fa-bar-chart', 'HRApp.view.reports.ReportsPanel');
+    },
+
+    // File Management
+    onFileManagementClick: function() {
+        this.createModuleWindow('files', 'File Management', 'fa fa-upload', 'HRApp.view.files.FileUploadPanel');
     },
     onAttendanceClick: function() {
         this.createModuleWindow('attendance', 'Attendance Management', 'fa fa-clock-o');

@@ -153,6 +153,24 @@ class Employee extends Model
     }
 
     /**
+     * Employee documents relationship
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(EmployeeDocument::class, 'employee_id');
+    }
+
+    /**
+     * Get profile photo document
+     */
+    public function profilePhoto()
+    {
+        return $this->hasOne(EmployeeDocument::class, 'employee_id')
+            ->where('document_type', 'photo')
+            ->latest('uploaded_at');
+    }
+
+    /**
      * Get full name
      */
     public function getFullNameAttribute()

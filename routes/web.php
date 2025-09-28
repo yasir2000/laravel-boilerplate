@@ -14,6 +14,11 @@ use Inertia\Inertia;
 |
 */
 
+// SIMPLE TEST ROUTE - SHOULD WORK
+Route::get('/simple-test', function () {
+    return "SIMPLE TEST ROUTE WORKING!";
+})->name('simple.test');
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -33,6 +38,11 @@ Route::get('/dashboard', function () {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Profile Routes
+Route::get('/profile', function () {
+    return Inertia::render('Profile/Show');
+})->middleware(['auth', 'verified'])->name('profile');
+
 // Authentication Routes
 Route::get('/login', function () {
     return Inertia::render('Auth/Login', [
@@ -45,12 +55,79 @@ Route::get('/register', function () {
     return Inertia::render('Auth/Register');
 })->name('register');
 
-// HR Management System Route
-Route::get('/hr', function () {
-    return redirect('/hr-app/');
-})->middleware(['auth', 'verified'])->name('hr');
+// HR Management System Routes - Vue.js Application
+Route::middleware(['auth', 'verified'])->prefix('hr-vue')->name('hr.')->group(function () {
+    
+    // HR Dashboard
+    Route::get('/', function () {
+        return Inertia::render('HR/Dashboard', [
+            'stats' => [
+                'totalEmployees' => 50,
+                'presentToday' => 47,
+                'onLeave' => 3,
+                'departments' => 5,
+                'avgAttendance' => 94.2,
+                'pendingRequests' => 8
+            ]
+        ]);
+    })->name('dashboard');
+    
+    // Employee Management
+    Route::get('/employees', function () {
+        return Inertia::render('HR/Employees', [
+            'employees' => [
+                // Demo data will be loaded by the component
+            ]
+        ]);
+    })->name('employees');
+    
+    // Department Management
+    Route::get('/departments', function () {
+        return Inertia::render('HR/Departments', [
+            'departments' => [
+                // Demo data will be loaded by the component
+            ]
+        ]);
+    })->name('departments');
+    
+    // Attendance Management
+    Route::get('/attendance', function () {
+        return Inertia::render('HR/Attendance', [
+            'attendance' => [
+                // Demo data will be loaded by the component
+            ]
+        ]);
+    })->name('attendance');
+    
+    // Team Management
+    Route::get('/teams', function () {
+        return Inertia::render('HR/Teams', [
+            'teams' => [
+                // Demo data will be loaded by the component
+            ]
+        ]);
+    })->name('teams');
+    
+    // Reports
+    Route::get('/reports', function () {
+        return Inertia::render('HR/Reports', [
+            'reports' => [
+                // Demo data will be loaded by the component
+            ]
+        ]);
+    })->name('reports');
+    
+    // Settings
+    Route::get('/settings', function () {
+        return Inertia::render('HR/Settings', [
+            'settings' => [
+                // Demo data will be loaded by the component
+            ]
+        ]);
+    })->name('settings');
+});
 
-// Serve HR Application (ExtJS)
-Route::get('/hr-app/{path?}', function () {
-    return view('hr-app');
-})->where('path', '.*')->middleware(['auth', 'verified'])->name('hr.app');
+// Legacy HR routes for backward compatibility
+Route::get('/hr-test', function () {
+    return "LARAVEL ROUTE WORKING! Time: " . now() . " - HR Vue.js routes are now available at /hr/";
+})->name('hr.test');

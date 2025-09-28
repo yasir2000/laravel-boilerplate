@@ -39,6 +39,30 @@ Ext.define('HRApp.view.main.MainView', {
                 },
                 items: [{
                     xtype: 'button',
+                    iconCls: 'fa fa-dashboard',
+                    scale: 'large',
+                    cls: 'desktop-icon',
+                    tooltip: 'HR Dashboard',
+                    handler: 'onDashboardClick'
+                }, {
+                    xtype: 'label',
+                    text: 'Dashboard',
+                    cls: 'desktop-label'
+                }]
+            },
+            {
+                xtype: 'panel',
+                x: 130,
+                y: 30,
+                width: 80,
+                height: 100,
+                cls: 'desktop-shortcut',
+                layout: {
+                    type: 'vbox',
+                    align: 'center'
+                },
+                items: [{
+                    xtype: 'button',
                     iconCls: 'fa fa-users',
                     scale: 'large',
                     cls: 'desktop-icon',
@@ -52,7 +76,7 @@ Ext.define('HRApp.view.main.MainView', {
             },
             {
                 xtype: 'panel',
-                x: 130,
+                x: 230,
                 y: 30,
                 width: 80,
                 height: 100,
@@ -76,7 +100,7 @@ Ext.define('HRApp.view.main.MainView', {
             },
             {
                 xtype: 'panel',
-                x: 230,
+                x: 330,
                 y: 30,
                 width: 80,
                 height: 100,
@@ -100,7 +124,7 @@ Ext.define('HRApp.view.main.MainView', {
             },
             {
                 xtype: 'panel',
-                x: 330,
+                x: 430,
                 y: 30,
                 width: 80,
                 height: 100,
@@ -119,6 +143,30 @@ Ext.define('HRApp.view.main.MainView', {
                 }, {
                     xtype: 'label',
                     text: 'Reports',
+                    cls: 'desktop-label'
+                }]
+            },
+            {
+                xtype: 'panel',
+                x: 30,
+                y: 140,
+                width: 80,
+                height: 100,
+                cls: 'desktop-shortcut',
+                layout: {
+                    type: 'vbox',
+                    align: 'center'
+                },
+                items: [{
+                    xtype: 'button',
+                    iconCls: 'fa fa-upload',
+                    scale: 'large',
+                    cls: 'desktop-icon',
+                    tooltip: 'File Management',
+                    handler: 'onFileManagementClick'
+                }, {
+                    xtype: 'label',
+                    text: 'Files',
                     cls: 'desktop-label'
                 }]
             }
@@ -144,6 +192,10 @@ Ext.define('HRApp.view.main.MainView', {
                 border: '1px solid #449d44'
             },
             menu: [{
+                text: 'HR Dashboard',
+                iconCls: 'fa fa-dashboard',
+                handler: 'onDashboardClick'
+            }, '-', {
                 text: 'Employee Management',
                 iconCls: 'fa fa-users',
                 handler: 'onEmployeeClick'
@@ -159,6 +211,10 @@ Ext.define('HRApp.view.main.MainView', {
                 text: 'Reports & Analytics',
                 iconCls: 'fa fa-bar-chart',
                 handler: 'onReportsClick'
+            }, {
+                text: 'File Management',
+                iconCls: 'fa fa-upload',
+                handler: 'onFileManagementClick'
             }, '-', {
                 text: 'Settings',
                 iconCls: 'fa fa-cog',

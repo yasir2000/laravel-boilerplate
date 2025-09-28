@@ -1,0 +1,166 @@
+{
+  "_AppLayout-c092b763.js": {
+    "file": "assets/AppLayout-c092b763.js",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_GuestLayout-8e556f36.js": {
+    "file": "assets/GuestLayout-8e556f36.js",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "__plugin-vue_export-helper-c27b6911.js": {
+    "file": "assets/_plugin-vue_export-helper-c27b6911.js"
+  },
+  "resources/js/Pages/Auth/Login.vue": {
+    "file": "assets/Login-00ae5c4f.js",
+    "imports": [
+      "resources/js/app.js",
+      "_GuestLayout-8e556f36.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/Auth/Login.vue"
+  },
+  "resources/js/Pages/Auth/Register.vue": {
+    "file": "assets/Register-282c916a.js",
+    "imports": [
+      "resources/js/app.js",
+      "_GuestLayout-8e556f36.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/Auth/Register.vue"
+  },
+  "resources/js/Pages/Dashboard.vue": {
+    "file": "assets/Dashboard-711ccee1.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/Dashboard.vue"
+  },
+  "resources/js/Pages/HR/Attendance.vue": {
+    "file": "assets/Attendance-3be440b2.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/HR/Attendance.vue"
+  },
+  "resources/js/Pages/HR/Dashboard.css": {
+    "file": "assets/Dashboard-e3b0c442.css",
+    "src": "resources/js/Pages/HR/Dashboard.css"
+  },
+  "resources/js/Pages/HR/Dashboard.vue": {
+    "css": [
+      "assets/Dashboard-e3b0c442.css"
+    ],
+    "file": "assets/Dashboard-c93a5d5e.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js",
+      "__plugin-vue_export-helper-c27b6911.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/HR/Dashboard.vue"
+  },
+  "resources/js/Pages/HR/Departments.vue": {
+    "file": "assets/Departments-4148b2b0.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/HR/Departments.vue"
+  },
+  "resources/js/Pages/HR/Employees.vue": {
+    "file": "assets/Employees-a74fbea6.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/HR/Employees.vue"
+  },
+  "resources/js/Pages/HR/Reports.vue": {
+    "file": "assets/Reports-932d0a3f.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/HR/Reports.vue"
+  },
+  "resources/js/Pages/HR/Settings.vue": {
+    "file": "assets/Settings-4bfd6fb7.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/HR/Settings.vue"
+  },
+  "resources/js/Pages/HR/Teams.css": {
+    "file": "assets/Teams-24a59843.css",
+    "src": "resources/js/Pages/HR/Teams.css"
+  },
+  "resources/js/Pages/HR/Teams.vue": {
+    "css": [
+      "assets/Teams-24a59843.css"
+    ],
+    "file": "assets/Teams-22d5fabc.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js",
+      "__plugin-vue_export-helper-c27b6911.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/HR/Teams.vue"
+  },
+  "resources/js/Pages/Profile/Show.vue": {
+    "file": "assets/Show-dffa90b2.js",
+    "imports": [
+      "resources/js/app.js",
+      "_AppLayout-c092b763.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/Profile/Show.vue"
+  },
+  "resources/js/Pages/Welcome.vue": {
+    "file": "assets/Welcome-6ec22386.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/Pages/Welcome.vue"
+  },
+  "resources/js/app.css": {
+    "file": "assets/app-52cd331d.css",
+    "src": "resources/js/app.css"
+  },
+  "resources/js/app.js": {
+    "css": [
+      "assets/app-52cd331d.css"
+    ],
+    "dynamicImports": [
+      "resources/js/Pages/Auth/Login.vue",
+      "resources/js/Pages/Auth/Register.vue",
+      "resources/js/Pages/Dashboard.vue",
+      "resources/js/Pages/HR/Attendance.vue",
+      "resources/js/Pages/HR/Dashboard.vue",
+      "resources/js/Pages/HR/Departments.vue",
+      "resources/js/Pages/HR/Employees.vue",
+      "resources/js/Pages/HR/Reports.vue",
+      "resources/js/Pages/HR/Settings.vue",
+      "resources/js/Pages/HR/Teams.vue",
+      "resources/js/Pages/Profile/Show.vue",
+      "resources/js/Pages/Welcome.vue"
+    ],
+    "file": "assets/app-cbc783a2.js",
+    "isEntry": true,
+    "src": "resources/js/app.js"
+  }
+}

@@ -1,0 +1,386 @@
+<?php
+
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\WorkflowController;
+use App\Http\Controllers\Api\FileController;
+// use App\Http\Controllers\Api\UserController; // Commented out - controller doesn't exist
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+// Authentication routes
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+    
+    // Email verification
+    Route::post('email/verification-notification', [AuthController::class, 'sendEmailVerification'])->middleware('auth:sanctum');
+    Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+    
+    // Phone verification
+    Route::post('phone/verification-notification', [AuthController::class, 'sendPhoneVerification'])->middleware('auth:sanctum');
+    Route::post('phone/verify', [AuthController::class, 'verifyPhone'])->middleware('auth:sanctum');
+    
+    // Two-factor authentication
+    Route::post('two-factor/enable', [AuthController::class, 'enableTwoFactor'])->middleware('auth:sanctum');
+    Route::post('two-factor/disable', [AuthController::class, 'disableTwoFactor'])->middleware('auth:sanctum');
+    Route::post('two-factor/confirm', [AuthController::class, 'confirmTwoFactor'])->middleware('auth:sanctum');
+    Route::post('two-factor/recovery-codes', [AuthController::class, 'generateRecoveryCodes'])->middleware('auth:sanctum');
+    
+    // Password reset
+    Route::post('password/forgot', [AuthController::class, 'forgotPassword']);
+    Route::post('password/reset', [AuthController::class, 'resetPassword']);
+});
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+// Public routes
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now(),
+        'version' => '1.0.0',
+    ]);
+});
+
+// Protected API routes
+Route::middleware(['auth:sanctum'])->group(function () {
+    
+    // User profile - Commented out because controller doesn't exist
+    /*
+    Route::prefix('user')->group(function () {
+        Route::get('profile', [UserController::class, 'profile']);
+        Route::put('profile', [UserController::class, 'updateProfile']);
+        Route::post('avatar', [UserController::class, 'uploadAvatar']);
+        Route::delete('avatar', [UserController::class, 'deleteAvatar']);
+        Route::put('locale', [UserController::class, 'updateLocale']);
+        Route::put('timezone', [UserController::class, 'updateTimezone']);
+    });
+    */
+    
+    // Notifications
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('unread-count', [NotificationController::class, 'unreadCount']);
+        Route::post('{notification}/read', [NotificationController::class, 'markAsRead']);
+        Route::post('mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('{notification}', [NotificationController::class, 'destroy']);
+    });
+    
+    // Workflows
+    Route::prefix('workflows')->group(function () {
+        Route::get('definitions', [WorkflowController::class, 'definitions']);
+        Route::post('start', [WorkflowController::class, 'start']);
+        Route::get('instances', [WorkflowController::class, 'instances']);
+        Route::get('instances/{instance}', [WorkflowController::class, 'show']);
+        Route::post('instances/{instance}/cancel', [WorkflowController::class, 'cancel']);
+        
+        Route::prefix('steps')->group(function () {
+            Route::get('pending', [WorkflowController::class, 'pendingSteps']);
+            Route::get('{step}', [WorkflowController::class, 'showStep']);
+            Route::post('{step}/assign', [WorkflowController::class, 'assignStep']);
+            Route::post('{step}/action', [WorkflowController::class, 'recordAction']);
+        });
+        
+        Route::get('stats', [WorkflowController::class, 'stats']);
+    });
+    
+    // File management
+    Route::prefix('files')->group(function () {
+        Route::post('upload', [FileController::class, 'upload']);
+        Route::post('upload-multiple', [FileController::class, 'uploadMultiple']);
+        Route::post('upload-image', [FileController::class, 'uploadImage']);
+        Route::delete('{file}', [FileController::class, 'delete']);
+        Route::get('{file}/download', [FileController::class, 'download']);
+    });
+    
+    // Company routes
+    Route::apiResource('companies', CompanyController::class);
+    Route::get('companies/{company}/statistics', [CompanyController::class, 'statistics']);
+    
+    // Project routes
+    Route::apiResource('projects', ProjectController::class);
+    Route::get('projects/{project}/dashboard', [ProjectController::class, 'dashboard']);
+    Route::patch('projects/{project}/status', [ProjectController::class, 'updateStatus']);
+    
+    // Task routes
+    Route::apiResource('tasks', TaskController::class);
+    Route::patch('tasks/{task}/complete', [TaskController::class, 'complete']);
+    Route::patch('tasks/{task}/assign', [TaskController::class, 'assign']);
+    Route::get('my-tasks', [TaskController::class, 'myTasks']);
+    
+    // Dashboard routes
+    Route::get('dashboard/overview', function (Request $request) {
+        $user = $request->user();
+
+        return response()->json([
+            'user' => $user->load(['company', 'roles']),
+            'stats' => [
+                'my_tasks' => $user->assignedTasks()->pending()->count(),
+                'overdue_tasks' => $user->assignedTasks()->overdue()->count(),
+                'completed_today' => $user->assignedTasks()
+                    ->whereDate('completed_at', today())
+                    ->count(),
+                'my_projects' => $user->projects()->active()->count(),
+            ],
+            'recent_tasks' => $user->assignedTasks()
+                ->with(['project'])
+                ->orderBy('updated_at', 'desc')
+                ->limit(5)
+                ->get(),
+        ]);
+    });
+    
+    // Reports routes
+    Route::prefix('reports')->group(function () {
+        Route::get('tasks/summary', function (Request $request) {
+            $user = $request->user();
+            $companyId = $user->company_id;
+            
+            $data = [
+                'total_tasks' => \App\Models\Task::whereHas('project', function ($q) use ($companyId) {
+                    $q->where('company_id', $companyId);
+                })->count(),
+                'completed_tasks' => \App\Models\Task::whereHas('project', function ($q) use ($companyId) {
+                    $q->where('company_id', $companyId);
+                })->completed()->count(),
+                'overdue_tasks' => \App\Models\Task::whereHas('project', function ($q) use ($companyId) {
+                    $q->where('company_id', $companyId);
+                })->overdue()->count(),
+                'tasks_by_status' => \App\Models\Task::whereHas('project', function ($q) use ($companyId) {
+                    $q->where('company_id', $companyId);
+                })->selectRaw('status, count(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status'),
+            ];
+            
+            return response()->json($data);
+        });
+        
+        Route::get('projects/summary', function (Request $request) {
+            $user = $request->user();
+            $companyId = $user->company_id;
+            
+            $data = [
+                'total_projects' => \App\Models\Project::where('company_id', $companyId)->count(),
+                'active_projects' => \App\Models\Project::where('company_id', $companyId)->active()->count(),
+                'completed_projects' => \App\Models\Project::where('company_id', $companyId)->completed()->count(),
+                'overdue_projects' => \App\Models\Project::where('company_id', $companyId)
+                    ->where('end_date', '<', now())
+                    ->whereNotIn('status', ['completed', 'cancelled'])
+                    ->count(),
+                'projects_by_status' => \App\Models\Project::where('company_id', $companyId)
+                    ->selectRaw('status, count(*) as count')
+                    ->groupBy('status')
+                    ->pluck('count', 'status'),
+            ];
+            
+            return response()->json($data);
+        });
+    });
+    
+    // HR Management System API Routes - Protected with Authentication
+    Route::prefix('hr')->middleware(['auth:sanctum'])->group(function () {
+        
+        // Dashboard routes
+        Route::get('dashboard', [App\Http\Controllers\API\HR\DashboardController::class, 'index'])->middleware('hr.permission:view-dashboard');
+        Route::get('dashboard/quick-stats', [App\Http\Controllers\API\HR\DashboardController::class, 'quickStats'])->middleware('hr.permission:view-dashboard');
+        Route::get('dashboard/recent-activity', [App\Http\Controllers\API\HR\DashboardController::class, 'recentActivity'])->middleware('hr.permission:view-dashboard');
+        Route::get('dashboard/alerts', [App\Http\Controllers\API\HR\DashboardController::class, 'alerts'])->middleware('hr.permission:view-dashboard');
+        
+        // File upload routes
+        Route::post('files/upload/employee-document', [App\Http\Controllers\API\HR\FileUploadController::class, 'uploadEmployeeDocument'])->middleware('hr.permission:upload-documents');
+        Route::get('files/employee/{employee_id}/documents', [App\Http\Controllers\API\HR\FileUploadController::class, 'getEmployeeDocuments'])->middleware('hr.permission:view-documents');
+        Route::get('files/download/{document_id}', [App\Http\Controllers\API\HR\FileUploadController::class, 'downloadDocument'])->middleware('hr.permission:view-documents');
+        Route::delete('files/delete/{document_id}', [App\Http\Controllers\API\HR\FileUploadController::class, 'deleteDocument'])->middleware('hr.permission:delete-documents');
+        Route::post('files/upload/profile-photo', [App\Http\Controllers\API\HR\FileUploadController::class, 'updateProfilePhoto'])->middleware('hr.permission:upload-documents');
+        Route::get('files/upload-stats', [App\Http\Controllers\API\HR\FileUploadController::class, 'getUploadStats'])->middleware('hr.permission:view-documents');
+        
+        
+        // Department routes
+        Route::prefix('departments')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'index'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'store'])
+                ->middleware('hr.permission:hr:departments:create');
+            Route::get('/tree', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'tree'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/list', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'list'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/hierarchy', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'hierarchy'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'statistics'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::get('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'show'])
+                ->middleware('hr.permission:hr:departments:view');
+            Route::put('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'update'])
+                ->middleware('hr.permission:hr:departments:update');
+            Route::delete('/{department}', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'destroy'])
+                ->middleware('hr.permission:hr:departments:delete');
+            Route::get('/{department}/employees', [\App\Http\Controllers\Api\HR\DepartmentController::class, 'employees'])
+                ->middleware('hr.permission:hr:departments:view');
+        });
+        
+        // Position routes
+        Route::prefix('positions')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'index'])
+                ->middleware('hr.permission:hr:positions:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\PositionController::class, 'store'])
+                ->middleware('hr.permission:hr:positions:create');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\PositionController::class, 'statistics'])
+                ->middleware('hr.permission:hr:positions:view');
+            Route::get('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'show'])
+                ->middleware('hr.permission:hr:positions:view');
+            Route::put('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'update'])
+                ->middleware('hr.permission:hr:positions:update');
+            Route::delete('/{position}', [\App\Http\Controllers\Api\HR\PositionController::class, 'destroy'])
+                ->middleware('hr.permission:hr:positions:delete');
+        });
+        
+        // Employee routes - with contextual permissions
+        Route::prefix('employees')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'index'])
+                ->middleware('hr.permission:hr:employees:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'store'])
+                ->middleware('hr.permission:hr:employees:create');
+            Route::get('/list', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'list'])
+                ->middleware('hr.permission:hr:employees:view');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'statistics'])
+                ->middleware('hr.permission:hr:employees:view');
+            Route::get('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'show'])
+                ->middleware(['hr.permission:hr:employees:view', 'hr.context:own']);
+            Route::put('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'update'])
+                ->middleware(['hr.permission:hr:employees:update', 'hr.context:own']);
+            Route::delete('/{employee}', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'destroy'])
+                ->middleware('hr.permission:hr:employees:delete');
+            Route::post('/{employee}/restore', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'restore'])
+                ->middleware('hr.permission:hr:employees:update');
+            Route::get('/{employee}/attendance', [\App\Http\Controllers\Api\HR\EmployeeController::class, 'attendance'])
+                ->middleware(['hr.permission:hr:attendance:view', 'hr.context:team']);
+        });
+        
+        // Attendance routes - with contextual permissions
+        Route::prefix('attendance')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'index'])
+                ->middleware('hr.permission:hr:attendance:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'store'])
+                ->middleware('hr.permission:hr:attendance:create');
+            Route::get('/live', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'live'])
+                ->middleware('hr.permission:hr:attendance:view-all');
+            Route::get('/history', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'history'])
+                ->middleware(['hr.permission:hr:attendance:view', 'hr.context:own']);
+            Route::get('/current-status', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'currentStatus'])
+                ->middleware(['hr.permission:hr:attendance:view-own']);
+            Route::get('/summary', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'summary'])
+                ->middleware('hr.permission:hr:attendance:view');
+            Route::get('/export', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'export'])
+                ->middleware('hr.permission:hr:reports:export');
+            Route::post('/check-in', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkIn'])
+                ->middleware('hr.permission:hr:attendance:create');
+            Route::post('/check-out', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'checkOut'])
+                ->middleware('hr.permission:hr:attendance:create');
+            Route::get('/today', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'today'])
+                ->middleware(['hr.permission:hr:attendance:view-own']);
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'statistics'])
+                ->middleware('hr.permission:hr:attendance:view');
+            Route::get('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'show'])
+                ->middleware(['hr.permission:hr:attendance:view', 'hr.context:own']);
+            Route::put('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'update'])
+                ->middleware(['hr.permission:hr:attendance:update', 'hr.context:team']);
+            Route::delete('/{attendance}', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'destroy'])
+                ->middleware('hr.permission:hr:attendance:delete');
+            Route::post('/{attendance}/approve', [\App\Http\Controllers\Api\HR\AttendanceController::class, 'approve'])
+                ->middleware('hr.permission:hr:attendance:approve');
+        });
+        
+        // Leave Request routes - with contextual permissions
+        Route::prefix('leave-requests')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'index'])
+                ->middleware('hr.permission:hr:leave:view');
+            Route::post('/', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'store'])
+                ->middleware('hr.permission:hr:leave:create');
+            Route::post('/draft', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'saveDraft'])
+                ->middleware('hr.permission:hr:leave:create');
+            Route::get('/pending', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'pending'])
+                ->middleware('hr.permission:hr:leave:approve');
+            Route::get('/statistics', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'statistics'])
+                ->middleware('hr.permission:hr:leave:view');
+            Route::get('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'show'])
+                ->middleware(['hr.permission:hr:leave:view', 'hr.context:own']);
+            Route::put('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'update'])
+                ->middleware(['hr.permission:hr:leave:update', 'hr.context:own']);
+            Route::delete('/{leaveRequest}', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'destroy'])
+                ->middleware(['hr.permission:hr:leave:delete', 'hr.context:own']);
+            Route::post('/{leaveRequest}/approve', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'approve'])
+                ->middleware('hr.permission:hr:leave:approve');
+            Route::post('/{leaveRequest}/reject', [\App\Http\Controllers\Api\HR\LeaveRequestController::class, 'reject'])
+                ->middleware('hr.permission:hr:leave:reject');
+        });
+        
+        // Reports routes - protected with proper permissions
+        Route::prefix('reports')->group(function () {
+            Route::get('/dashboard-kpis', [\App\Http\Controllers\Api\HR\ReportController::class, 'dashboardKpis'])
+                ->middleware('hr.permission:hr:dashboard:view');
+            Route::get('/attendance-trends', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceTrends'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/department-distribution', [\App\Http\Controllers\Api\HR\ReportController::class, 'departmentDistribution'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/employee-performance', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeePerformance'])
+                ->middleware('hr.permission:hr:reports:advanced');
+            Route::get('/leave-analysis', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveAnalysis'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/attendance-summary', [\App\Http\Controllers\Api\HR\ReportController::class, 'attendanceSummary'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/employee-demographics', [\App\Http\Controllers\Api\HR\ReportController::class, 'employeeDemographics'])
+                ->middleware('hr.permission:hr:reports:advanced');
+            Route::get('/leave-types', [\App\Http\Controllers\Api\HR\ReportController::class, 'leaveTypes'])
+                ->middleware('hr.permission:hr:reports:view');
+            Route::get('/export/{type}', [\App\Http\Controllers\Api\HR\ReportController::class, 'export'])
+                ->middleware('hr.permission:hr:reports:export');
+            Route::get('/employee-growth', [\App\Http\Controllers\Api\HR\DashboardController::class, 'employeeGrowth'])
+                ->middleware('hr.permission:hr:reports:view');
+        });
+        
+        // HR Dashboard - Protected
+        Route::get('/dashboard', function () {
+            $stats = [
+                'total_employees' => \App\Models\HR\Employee::where('employment_status', 'active')->count(),
+                'total_departments' => \App\Models\HR\Department::where('is_active', true)->count(),
+                'present_today' => \App\Models\HR\Attendance::whereDate('date', today())
+                    ->where('status', 'present')->count(),
+                'pending_leave_requests' => \App\Models\HR\LeaveRequest::where('status', 'pending')->count(),
+                'new_hires_this_month' => \App\Models\HR\Employee::whereMonth('hire_date', now()->month)
+                    ->whereYear('hire_date', now()->year)->count(),
+                'total_payroll' => \App\Models\HR\Employee::where('employment_status', 'active')->sum('salary'),
+                'departments_without_manager' => \App\Models\HR\Department::whereNull('manager_id')
+                    ->where('is_active', true)->count(),
+                'employees_on_leave' => \App\Models\HR\Employee::where('employment_status', 'on_leave')->count(),
+            ];
+            
+            return response()->json([
+                'success' => true,
+                'data' => $stats,
+                'message' => 'HR dashboard data retrieved successfully'
+            ]);
+        })->middleware('hr.permission:hr:dashboard:view');
+    });
+    
+});

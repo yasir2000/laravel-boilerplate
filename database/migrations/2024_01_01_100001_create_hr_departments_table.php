@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('code', 20)->unique();
             $table->text('description')->nullable();
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->uuid('manager_id')->nullable();
             $table->string('location', 100)->nullable();
             $table->decimal('budget', 15, 2)->nullable();
             $table->integer('max_employees')->nullable();
@@ -28,11 +27,9 @@ return new class extends Migration
             
             // Foreign keys
             $table->foreign('parent_id')->references('id')->on('hr_departments')->onDelete('set null');
-            $table->foreign('manager_id')->references('id')->on('users')->onDelete('set null');
             
             // Indexes
             $table->index(['is_active', 'parent_id']);
-            $table->index('manager_id');
         });
     }
 
