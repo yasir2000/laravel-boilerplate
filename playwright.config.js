@@ -80,7 +80,7 @@ export default defineConfig({
     command: 'php artisan serve',
     url: 'http://localhost:8000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 15 * 1000,
   },
 
   /* Global setup */

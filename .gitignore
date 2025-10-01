@@ -7,6 +7,12 @@
 /.env.backup
 /.env.production
 /.phpunit.result.cache
+
+# Laravel storage (sessions, cache, logs)
+/storage/framework/sessions/*
+/storage/framework/cache/*
+/storage/logs/*
+
 /Homestead.json
 /Homestead.yaml
 /.vagrant
@@ -18,3 +24,11 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 Thumbs.db
+
+# Test directories and cache
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+*.result.cache
+*.cache
