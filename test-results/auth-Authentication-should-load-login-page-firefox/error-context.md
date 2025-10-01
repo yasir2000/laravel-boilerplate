@@ -1,0 +1,62 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - link [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img [ref=e6] [cursor=pointer]
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Email
+        - textbox "Email" [active] [ref=e13]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Password
+        - textbox "Password" [ref=e16]
+      - generic [ref=e18]:
+        - checkbox "Remember me" [ref=e19]
+        - generic [ref=e20]: Remember me
+      - generic [ref=e21]:
+        - link "Forgot your password?" [ref=e22] [cursor=pointer]:
+          - /url: /forgot-password
+        - button "Log in" [ref=e23] [cursor=pointer]
+      - generic [ref=e24]:
+        - generic [ref=e25]: Don't have an account?
+        - link "Sign up" [ref=e26] [cursor=pointer]:
+          - /url: /register
+  - generic [ref=e27]:
+    - generic [ref=e29]:
+      - generic [ref=e31]:
+        - generic [ref=e32] [cursor=pointer]:
+          - text: 
+          - generic: Request
+        - text: 
+        - generic [ref=e33] [cursor=pointer]:
+          - text: 
+          - generic: Timeline
+        - text: 
+        - generic [ref=e34] [cursor=pointer]:
+          - text: 
+          - generic: Views
+          - generic [ref=e35] [cursor=pointer]: "1"
+        - text:    
+      - generic [ref=e36]:
+        - generic [ref=e38] [cursor=pointer]:
+          - generic: 
+        - generic [ref=e41] [cursor=pointer]:
+          - generic: 
+        - generic [ref=e42] [cursor=pointer]:
+          - generic: 
+          - generic: 221ms
+        - generic [ref=e43]:
+          - generic: 
+          - generic: 2MB
+        - generic [ref=e44]:
+          - generic: 
+          - generic: 10.x
+        - generic [ref=e45] [cursor=pointer]:
+          - generic: 
+          - generic: GET login
+    - text:          
+  - text: 
+```
