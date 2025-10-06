@@ -3,10 +3,10 @@ FROM laravelsail/php83-composer:latest
 
 WORKDIR /var/www/html
 
-# Install additional PHP extensions
+# Install additional PHP extensions including MySQL PDO
 RUN apt-get update && apt-get install -y \
     libexif-dev \
-    && docker-php-ext-install exif \
+    && docker-php-ext-install exif pdo_mysql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install FrankenPHP
