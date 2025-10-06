@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('department')->nullable();
-            $table->unsignedBigInteger('team_lead_id')->nullable();
+            $table->uuid('team_lead_id')->nullable();
             $table->enum('team_type', [
                 'project', 
                 'permanent', 
@@ -55,7 +55,7 @@ return new class extends Migration
         Schema::create('hr_team_members', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('team_id');
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('user_id');
             $table->string('role')->default('member');
             $table->timestamp('joined_at')->useCurrent();
             $table->boolean('is_active')->default(true);
@@ -75,7 +75,7 @@ return new class extends Migration
         Schema::create('hr_team_evaluations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('team_id');
-            $table->unsignedBigInteger('evaluator_id');
+            $table->uuid('evaluator_id');
             $table->integer('performance_score');
             $table->text('strengths')->nullable();
             $table->text('areas_for_improvement')->nullable();
