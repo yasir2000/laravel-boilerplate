@@ -42,7 +42,6 @@ return new class extends Migration
 
             $table->foreign('workflow_definition_id')->references('id')->on('workflow_definitions');
             $table->foreign('created_by')->references('id')->on('users');
-            $table->index(['subject_type', 'subject_id']);
             $table->index(['status', 'created_at']);
             $table->index('workflow_definition_id');
         });

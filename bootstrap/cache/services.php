@@ -68,8 +68,10 @@
     64 => 'Spatie\\WebhookClient\\WebhookClientServiceProvider',
     65 => 'App\\Providers\\AppServiceProvider',
     66 => 'App\\Providers\\AuthServiceProvider',
-    67 => 'App\\Providers\\EventServiceProvider',
-    68 => 'App\\Providers\\RouteServiceProvider',
+    67 => 'App\\Providers\\BroadcastServiceProvider',
+    68 => 'App\\Providers\\EventServiceProvider',
+    69 => 'App\\Providers\\FortifyServiceProvider',
+    70 => 'App\\Providers\\RouteServiceProvider',
   ),
   'eager' => 
   array (
@@ -122,8 +124,10 @@
     46 => 'Spatie\\WebhookClient\\WebhookClientServiceProvider',
     47 => 'App\\Providers\\AppServiceProvider',
     48 => 'App\\Providers\\AuthServiceProvider',
-    49 => 'App\\Providers\\EventServiceProvider',
-    50 => 'App\\Providers\\RouteServiceProvider',
+    49 => 'App\\Providers\\BroadcastServiceProvider',
+    50 => 'App\\Providers\\EventServiceProvider',
+    51 => 'App\\Providers\\FortifyServiceProvider',
+    52 => 'App\\Providers\\RouteServiceProvider',
   ),
   'deferred' => 
   array (

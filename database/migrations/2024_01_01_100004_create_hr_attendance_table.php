@@ -50,7 +50,7 @@ return new class extends Migration
             $table->text('admin_notes')->nullable();
             $table->boolean('requires_approval')->default(false);
             $table->boolean('is_approved')->default(true);
-            $table->unsignedBigInteger('approved_by')->nullable();
+            $table->uuid('approved_by')->nullable();
             $table->timestamp('approved_at')->nullable();
             
             $table->json('metadata')->nullable();
