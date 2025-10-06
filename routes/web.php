@@ -36,7 +36,18 @@ Route::get('/dashboard', function () {
             'workflows' => 0, // You can implement this later
         ],
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+// Alternative HR dashboard route
+Route::get('/hr-dashboard', function () {
+    return Inertia::render('Dashboard', [
+        'stats' => [
+            'users' => \App\Models\User::count(),
+            'notifications' => 0,
+            'workflows' => 0,
+        ],
+    ]);
+})->middleware(['auth'])->name('hr.dashboard.main');
 
 // Profile Routes
 Route::get('/profile', function () {
@@ -54,6 +65,13 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return Inertia::render('Auth/Register');
 })->name('register');
+
+// Email Verification Routes
+Route::get('/email/verify', function () {
+    return Inertia::render('Auth/VerifyEmail', [
+        'status' => session('status')
+    ]);
+})->middleware(['auth'])->name('verification.notice');
 
 // HR Management System Routes - Vue.js Application
 Route::middleware(['auth', 'verified'])->prefix('hr-vue')->name('hr.')->group(function () {
