@@ -2,9 +2,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.octane
     ports:
-      - "8000:8000"
+      - "8000:80"
     depends_on:
       - postgres
       - redis
@@ -28,6 +28,7 @@ services:
       - MAIL_MAILER=smtp
       - MAIL_HOST=mailpit
       - MAIL_PORT=1025
+      - OCTANE_SERVER=frankenphp
     networks:
       - laravel
 

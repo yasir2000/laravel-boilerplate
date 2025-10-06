@@ -32,3 +32,11 @@ Thumbs.db
 /playwright/.cache/
 *.result.cache
 *.cache
+
+**/caddy
+frankenphp
+frankenphp-worker.php
+
+**/caddy
+frankenphp
+frankenphp-worker.php
