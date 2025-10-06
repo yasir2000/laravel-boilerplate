@@ -5,9 +5,14 @@ namespace App\Providers;
 use App\Models\Company;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\WorkflowDefinition;
+use App\Models\WorkflowInstance;
+use App\Models\WorkflowStep;
 use App\Policies\CompanyPolicy;
 use App\Policies\ProjectPolicy;
 use App\Policies\TaskPolicy;
+use App\Policies\WorkflowDefinitionPolicy;
+use App\Policies\WorkflowPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -21,6 +26,9 @@ class AuthServiceProvider extends ServiceProvider
         Company::class => CompanyPolicy::class,
         Project::class => ProjectPolicy::class,
         Task::class => TaskPolicy::class,
+        WorkflowDefinition::class => WorkflowDefinitionPolicy::class,
+        WorkflowInstance::class => WorkflowPolicy::class,
+        WorkflowStep::class => WorkflowPolicy::class,
     ];
 
     /**

@@ -17,6 +17,69 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
+// User-specific notifications
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+
+// Company-wide notifications
+Broadcast::channel('company.{companyId}', function ($user, $companyId) {
+    return $user->company_id === $companyId;
+});
+
+// Department-specific notifications
+Broadcast::channel('department.{departmentId}', function ($user, $departmentId) {
+    return $user->hrEmployees()->where('department_id', $departmentId)->exists() ||
+           $user->hasPermissionTo('hr:departments:view');
+});
+
+// Project-specific notifications
+Broadcast::channel('project.{projectId}', function ($user, $projectId) {
+    return $user->projects()->where('id', $projectId)->exists() ||
+           $user->assignedTasks()->whereHas('project', function ($query) use ($projectId) {
+               $query->where('id', $projectId);
+           })->exists();
+});
+
+// HR system-wide notifications
+Broadcast::channel('hr.notifications', function ($user) {
+    return $user->hasAnyPermission([
+        'hr:dashboard:view',
+        'hr:employees:view',
+        'hr:departments:view'
+    ]);
+});
+
+// Task assignment notifications
+Broadcast::channel('tasks.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+
+// Live attendance tracking
+Broadcast::channel('attendance.{companyId}', function ($user, $companyId) {
+    return $user->company_id === $companyId && 
+           $user->hasAnyPermission(['hr:attendance:view', 'hr:attendance:view-all']);
+});
+
+// User presence channel
+Broadcast::channel('presence.company.{companyId}', function ($user, $companyId) {
+    if ($user->company_id === $companyId) {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'avatar' => $user->avatar,
+            'status' => 'online'
+        ];
+    }
+});
+
+// HR workflow approvals
+Broadcast::channel('workflow.{workflowId}', function ($user, $workflowId) {
+    // Check if user is involved in this workflow
+    return $user->workflowSteps()->where('workflow_instance_id', $workflowId)->exists() ||
+           $user->hasPermissionTo('hr:workflows:view-all');
+});
+
 // Private user notification channel
 Broadcast::channel('user.{userId}', function ($user, $userId) {
     return (int) $user->id === (int) $userId;
