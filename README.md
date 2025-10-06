@@ -60,24 +60,76 @@ A comprehensive Laravel boilerplate application for business scenarios with Post
 
 ## 🛠 Technology Stack
 
-- **Framework:** Laravel 10.x
-- **Database:** PostgreSQL
-- **Authentication:** Laravel Sanctum + Fortify
-- **Real-time:** Laravel Reverb (WebSockets)
-- **File Storage:** Spatie Media Library
-- **Workflow:** Symfony Workflow Component
-- **Translations:** Spatie Translatable
-- **Caching/Queues:** Redis
-- **Containerization:** Docker & Docker Compose
+### 🐳 Docker Architecture
+
+- **Application Container:** Laravel app with Sail-compatible setup
+- **Database:** MySQL 8.0 (configured for Laravel Sail)
+- **Cache/Session:** Redis 7
+- **Search:** Meilisearch
+- **Email Testing:** Mailpit
+- **Queue Management:** Built-in with Redis backend
 
 ## Installation
 
-### Prerequisites
+### 🚀 Quick Start with Laravel Sail (Recommended)
 
-- PHP 8.2 or higher
-- Composer
-- PostgreSQL 15+
-- Node.js & NPM (optional, for frontend assets)
+**Prerequisites:**
+- Docker Desktop for Windows
+- Git
+
+**Installation:**
+```bash
+# 1. Clone the repository
+git clone https://github.com/yasir2000/laravel-boilerplate.git
+cd laravel-boilerplate
+
+# 2. Copy environment file
+cp .env.example .env
+
+# 3. Start Laravel Sail containers
+docker-compose up -d
+
+# 4. Install dependencies and setup
+docker-compose exec laravel.test composer install
+docker-compose exec laravel.test php artisan key:generate
+docker-compose exec laravel.test php artisan migrate
+docker-compose exec laravel.test php artisan db:seed
+```
+
+**Access Points:**
+- **Application:** http://localhost
+- **Mailpit (Email Testing):** http://localhost:8025
+- **Meilisearch:** http://localhost:7700
+
+### ⚡ Laravel Octane Performance Boost
+
+For high-performance serving with FrankenPHP:
+```bash
+# Install Octane
+docker-compose exec laravel.test php artisan octane:install --server=frankenphp
+
+# Start high-performance server
+docker-compose exec laravel.test php artisan octane:frankenphp --host=0.0.0.0 --port=80
+```
+
+### 🛠 Laravel Sail Commands
+
+```bash
+# Run Artisan commands
+docker-compose exec laravel.test php artisan [command]
+
+# Run tests
+docker-compose exec laravel.test php artisan test
+
+# Access container shell
+docker-compose exec laravel.test bash
+
+# View logs
+docker-compose logs -f laravel.test
+
+# Stop containers
+docker-compose down
+```
 
 ### Manual Installation
 

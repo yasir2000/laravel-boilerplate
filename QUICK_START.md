@@ -1,23 +1,65 @@
-# IMMEDIATE SOLUTION - Laravel Boilerplate Setup
+# 🚀 Laravel Boilerplate - Quick Start with Laravel Sail
 
-## You have 3 options to get started:
+## 🐳 Recommended: Laravel Sail (Docker)
 
-### 🚀 Option 1: Use Docker (Easiest - No PHP/Composer needed)
+**Prerequisites:** Docker Desktop for Windows
 
-If you have Docker Desktop installed:
-
+### Step 1: Clone & Setup
 ```bash
-# Start with Docker
+git clone https://github.com/yasir2000/laravel-boilerplate.git
+cd laravel-boilerplate
+cp .env.example .env
+```
+
+### Step 2: Start Laravel Sail
+```bash
+# Start all containers
 docker-compose up -d
 
 # Install dependencies
-docker-compose exec app composer install
+docker-compose exec laravel.test composer install
 
-# Setup application
-docker-compose exec app php artisan key:generate
-docker-compose exec app php artisan migrate:fresh --seed
+# Generate app key
+docker-compose exec laravel.test php artisan key:generate
 
-# Access at: http://localhost:8000
+# Run migrations
+docker-compose exec laravel.test php artisan migrate
+
+# Seed database
+docker-compose exec laravel.test php artisan db:seed
+```
+
+### Step 3: Access Your Application
+- **🌐 App:** http://localhost
+- **📧 Mailpit:** http://localhost:8025
+- **🔍 Meilisearch:** http://localhost:7700
+
+### 🚀 Optional: Add Laravel Octane for Performance
+```bash
+# Install Octane
+docker-compose exec laravel.test php artisan octane:install --server=frankenphp
+
+# Start high-performance server
+docker-compose exec laravel.test php artisan octane:frankenphp --host=0.0.0.0 --port=80
+```
+
+## 🛠 Useful Commands
+
+```bash
+# Artisan commands
+docker-compose exec laravel.test php artisan [command]
+
+# Run tests
+docker-compose exec laravel.test php artisan test
+
+# Access container shell
+docker-compose exec laravel.test bash
+
+# View logs
+docker-compose logs -f laravel.test
+
+# Stop containers
+docker-compose down
 ```
 
 ### 💻 Option 2: Install PHP & Composer with Chocolatey

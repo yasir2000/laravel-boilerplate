@@ -9,6 +9,7 @@ services:
         ports:
             - '80:80'
             - '5173:5173'
+            - '8000:8000'
         environment:
             WWWUSER: 1000
             LARAVEL_SAIL: 1
