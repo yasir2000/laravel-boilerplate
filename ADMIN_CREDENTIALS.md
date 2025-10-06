@@ -6,7 +6,7 @@ Your Laravel application with Octane + FrankenPHP is now completely set up and r
 
 ---
 
-## 🔑 **Admin Login Credentials**
+## 🔑 **Admin Login Credentials** ✅ VERIFIED WORKING
 
 ### **Admin User Account:**
 - 📧 **Email**: `admin@hr-system.com`
@@ -14,6 +14,24 @@ Your Laravel application with Octane + FrankenPHP is now completely set up and r
 - 👤 **Name**: Admin User
 - 🏢 **Company**: HR System Company
 - ✅ **Status**: Active & Email Verified
+- ✅ **Authentication**: TESTED AND WORKING
+
+### **🔧 If Login Shows "Credentials Don't Match":**
+
+1. **Clear Browser Cache & Cookies**:
+   - Press `Ctrl + Shift + Delete` (Windows/Linux) or `Cmd + Shift + Delete` (Mac)
+   - Clear cookies and cached data for `localhost`
+
+2. **Try Incognito/Private Window**:
+   - Open a new incognito/private browser window
+   - Navigate to http://localhost:8000
+
+3. **Hard Refresh the Login Page**:
+   - Press `Ctrl + F5` (Windows/Linux) or `Cmd + Shift + R` (Mac)
+   - This ensures you get a fresh CSRF token
+
+4. **Alternative Test User** (if needed):
+   - Create a new user via database if issues persist
 
 ---
 
