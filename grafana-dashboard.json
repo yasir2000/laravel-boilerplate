@@ -1,0 +1,137 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ERP Integration Service Dashboard",
+    "tags": ["integration", "erp", "camel"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"integration-service\"}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Employee Sync Success Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(employee_sync_success_total[5m])",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Sync Operations Timeline",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(employee_sync_total[1m])",
+            "legendFormat": "Employee Sync",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(payroll_sync_total[1m])",
+            "legendFormat": "Payroll Sync", 
+            "refId": "B"
+          },
+          {
+            "expr": "rate(accounting_sync_total[1m])",
+            "legendFormat": "Accounting Sync",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Error Rate by Type",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (error_type) (increase(integration_errors_total[1h]))",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Response Time Distribution",
+        "type": "histogram",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile",
+            "refId": "B"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Database Connection Pool",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "hikaricp_connections_active{pool=\"HikariPool-1\"}",
+            "legendFormat": "Active Connections",
+            "refId": "A"
+          },
+          {
+            "expr": "hikaricp_connections_idle{pool=\"HikariPool-1\"}",
+            "legendFormat": "Idle Connections",
+            "refId": "B"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  }
+}

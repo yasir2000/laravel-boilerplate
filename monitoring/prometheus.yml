@@ -19,6 +19,9 @@ scrape_configs:
     static_configs:
       - targets: ["integration-service:8083"]
     scrape_interval: 10s
+    basic_auth:
+      username: "admin"
+      password: "admin123"
 
   # Laravel application monitoring (if you have metrics endpoint)
   - job_name: "laravel-app"
