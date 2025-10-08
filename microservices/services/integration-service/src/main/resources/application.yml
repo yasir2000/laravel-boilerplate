@@ -1,0 +1,114 @@
+spring:
+  application:
+    name: integration-service
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/integration_db
+    username: ${DB_USERNAME:integration_user}
+    password: ${DB_PASSWORD:integration_pass}
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  security:
+    user:
+      name: admin
+      password: ${ADMIN_PASSWORD:admin123}
+
+server:
+  port: ${SERVER_PORT:8083}
+  servlet:
+    context-path: /integration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Apache Camel Configuration
+camel:
+  springboot:
+    name: integration-camel-context
+    main-run-controller: true
+  component:
+    servlet:
+      mapping:
+        contextPath: /camel/*
+
+# ERP System Configurations
+erp:
+  frappe:
+    enabled: ${FRAPPE_ENABLED:true}
+    base-url: ${FRAPPE_BASE_URL:http://localhost:8000}
+    api-key: ${FRAPPE_API_KEY:your-api-key}
+    api-secret: ${FRAPPE_API_SECRET:your-api-secret}
+    timeout: ${FRAPPE_TIMEOUT:30000}
+    retry-attempts: ${FRAPPE_RETRY_ATTEMPTS:3}
+    
+  generic:
+    enabled: ${GENERIC_ERP_ENABLED:false}
+    base-url: ${GENERIC_ERP_BASE_URL:}
+    auth-type: ${GENERIC_ERP_AUTH_TYPE:bearer} # bearer, basic, api-key
+    token: ${GENERIC_ERP_TOKEN:}
+    username: ${GENERIC_ERP_USERNAME:}
+    password: ${GENERIC_ERP_PASSWORD:}
+
+# Integration Settings
+integration:
+  sync:
+    employee:
+      enabled: ${EMPLOYEE_SYNC_ENABLED:true}
+      cron: ${EMPLOYEE_SYNC_CRON:0 0 2 * * ?} # Daily at 2 AM
+      batch-size: ${EMPLOYEE_BATCH_SIZE:100}
+      
+    payroll:
+      enabled: ${PAYROLL_SYNC_ENABLED:true}
+      cron: ${PAYROLL_SYNC_CRON:0 0 3 * * ?} # Daily at 3 AM
+      batch-size: ${PAYROLL_BATCH_SIZE:50}
+      
+    accounting:
+      enabled: ${ACCOUNTING_SYNC_ENABLED:true}
+      cron: ${ACCOUNTING_SYNC_CRON:0 0 4 * * ?} # Daily at 4 AM
+      batch-size: ${ACCOUNTING_BATCH_SIZE:200}
+
+  queue:
+    provider: ${QUEUE_PROVIDER:rabbitmq} # rabbitmq, activemq
+    rabbitmq:
+      host: ${RABBITMQ_HOST:localhost}
+      port: ${RABBITMQ_PORT:5672}
+      username: ${RABBITMQ_USERNAME:guest}
+      password: ${RABBITMQ_PASSWORD:guest}
+      exchange: ${RABBITMQ_EXCHANGE:erp.exchange}
+      
+  laravel:
+    base-url: ${LARAVEL_BASE_URL:http://localhost:8000}
+    api-token: ${LARAVEL_API_TOKEN:}
+    
+  monitoring:
+    metrics-enabled: ${METRICS_ENABLED:true}
+    logging-level: ${LOGGING_LEVEL:INFO}
+
+# Logging Configuration
+logging:
+  level:
+    com.hrboilerplate.integration: ${LOGGING_LEVEL:INFO}
+    org.apache.camel: WARN
+    org.springframework: WARN
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n"

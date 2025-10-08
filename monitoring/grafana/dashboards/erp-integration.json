@@ -1,0 +1,119 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ERP Integration Dashboard",
+    "tags": ["integration", "erp", "monitoring"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Integration Service Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"integration-service\"}",
+            "legendFormat": "Service Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "DOWN",
+                    "color": "red"
+                  },
+                  "1": {
+                    "text": "UP",
+                    "color": "green"
+                  }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Sync Operations Success Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(integration_sync_success_total[5m]) / rate(integration_sync_total[5m]) * 100",
+            "legendFormat": "Success Rate %"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Employee Sync Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(integration_employee_sync_total[5m])",
+            "legendFormat": "Employee Sync Rate"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Payroll Sync Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(integration_payroll_sync_total[5m])",
+            "legendFormat": "Payroll Sync Rate"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 5,
+        "title": "Error Rate by Type",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(integration_errors_total[5m]) by (error_type)",
+            "legendFormat": "{{error_type}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  }
+}

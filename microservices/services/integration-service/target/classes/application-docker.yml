@@ -1,0 +1,53 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://integration-db:5432/integration_db
+    username: ${DB_USERNAME:integration_user}
+    password: ${DB_PASSWORD:integration_pass}
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+# Integration Configuration
+integration:
+  laravel:
+    base-url: ${LARAVEL_BASE_URL:http://laravel-app:8000}
+    api-token: ${LARAVEL_API_TOKEN:dummy-token}
+  
+  sync:
+    employee:
+      enabled: true
+      cron: "0 0 2 * * ?"
+      batch-size: 100
+    payroll:
+      enabled: true
+      cron: "0 0 3 * * ?"
+      batch-size: 50
+    accounting:
+      enabled: true
+      cron: "0 0 4 * * ?"
+      batch-size: 50
+
+# ERP Configuration
+erp:
+  frappe:
+    enabled: ${ERP_FRAPPE_ENABLED:false}
+    base-url: ${ERP_FRAPPE_URL:}
+    api-key: ${ERP_FRAPPE_API_KEY:}
+    api-secret: ${ERP_FRAPPE_API_SECRET:}
+  generic:
+    enabled: ${ERP_GENERIC_ENABLED:false}
+    base-url: ${ERP_GENERIC_URL:}
+    username: ${ERP_GENERIC_USERNAME:}
+    password: ${ERP_GENERIC_PASSWORD:}
+
+logging:
+  level:
+    com.hrboilerplate.integration: DEBUG
+    org.apache.camel: INFO

@@ -1,0 +1,53 @@
+# Prometheus configuration for ERP Integration monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Integration Service monitoring
+  - job_name: "integration-service"
+    metrics_path: "/integration/actuator/prometheus"
+    static_configs:
+      - targets: ["integration-service:8083"]
+    scrape_interval: 10s
+
+  # Laravel application monitoring (if you have metrics endpoint)
+  - job_name: "laravel-app"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["laravel-app:8000"]
+    scrape_interval: 30s
+
+  # RabbitMQ monitoring
+  - job_name: "rabbitmq"
+    static_configs:
+      - targets: ["rabbitmq:15692"]
+    metrics_path: "/metrics"
+    scrape_interval: 15s
+
+  # PostgreSQL monitoring (if you have postgres_exporter)
+  - job_name: "postgres"
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+    scrape_interval: 15s
+
+  # Redis monitoring (if you have redis_exporter)
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+    scrape_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093

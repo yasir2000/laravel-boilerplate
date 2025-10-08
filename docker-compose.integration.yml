@@ -1,0 +1,138 @@
+# Docker Compose Configuration for ERP Integration
+
+version: '3.8'
+
+services:
+  # Integration Service (Apache Camel)
+  integration-service:
+    build:
+      context: ./microservices/services/integration-service
+      dockerfile: Dockerfile
+    container_name: integration-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=integration-db
+      - DB_PORT=5432
+      - DB_NAME=integration_db
+      - DB_USERNAME=integration_user
+      - DB_PASSWORD=integration_pass
+      - RABBITMQ_HOST=rabbitmq
+      - LARAVEL_BASE_URL=http://laravel-app:8000
+    depends_on:
+      - integration-db
+      - rabbitmq
+    networks:
+      - integration-network
+    volumes:
+      - ./logs/integration:/app/logs
+    restart: unless-stopped
+
+  # PostgreSQL Database for Integration Service
+  integration-db:
+    image: postgres:15-alpine
+    container_name: integration-db
+    environment:
+      - POSTGRES_DB=integration_db
+      - POSTGRES_USER=integration_user
+      - POSTGRES_PASSWORD=integration_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - integration_db_data:/var/lib/postgresql/data
+      - ./database/integration-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - integration-network
+    restart: unless-stopped
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - integration-network
+    restart: unless-stopped
+
+  # Redis for Caching
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - integration-network
+    restart: unless-stopped
+
+  # Prometheus for Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    networks:
+      - integration-network
+    restart: unless-stopped
+
+  # Grafana for Visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - integration-network
+    restart: unless-stopped
+
+  # Frappe/ERPNext (Optional - for testing)
+  frappe:
+    image: frappe/erpnext:latest
+    container_name: frappe-erp
+    ports:
+      - "8000:8000"
+    environment:
+      - FRAPPE_SITE_NAME=erp.local
+      - ADMIN_PASSWORD=admin123
+    volumes:
+      - frappe_data:/home/frappe/frappe-bench
+    networks:
+      - integration-network
+    restart: unless-stopped
+    profiles:
+      - testing
+
+networks:
+  integration-network:
+    driver: bridge
+
+volumes:
+  integration_db_data:
+  rabbitmq_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  frappe_data:
