@@ -1,0 +1,125 @@
+{
+  "timestamp": "2025-10-08T17:12:08.973256",
+  "summary": {
+    "total_tests": 9,
+    "passed": 8,
+    "failed": 1,
+    "success_rate": 88.88888888888889,
+    "total_duration": 1.2874832153320312,
+    "recommendation": "Minor issues detected. Review failed tests before production."
+  },
+  "test_results": [
+    {
+      "test_name": "Service Health Check",
+      "passed": true,
+      "duration": 0.07882356643676758,
+      "error_message": null,
+      "details": {
+        "Integration Service": "RUNNING",
+        "Prometheus": "HEALTHY",
+        "Grafana": "HEALTHY",
+        "Alertmanager": "HEALTHY"
+      }
+    },
+    {
+      "test_name": "Docker Containers Status",
+      "passed": true,
+      "duration": 0.6949424743652344,
+      "error_message": null,
+      "details": {
+        "integration-service": "running",
+        "integration-db": "running",
+        "rabbitmq": "running",
+        "redis": "running",
+        "prometheus": "running",
+        "grafana": "running",
+        "alertmanager": "running"
+      }
+    },
+    {
+      "test_name": "Database Connectivity",
+      "passed": true,
+      "duration": 0.22910857200622559,
+      "error_message": null,
+      "details": {
+        "database": "CONNECTED",
+        "output": " test_connection \n-----------------\n               1\n(1 row)\n\n"
+      }
+    },
+    {
+      "test_name": "REST Endpoints",
+      "passed": true,
+      "duration": 0.10464119911193848,
+      "error_message": null,
+      "details": {
+        "GET /": "PASS",
+        "GET /actuator/health": "PASS",
+        "GET /integration/status": "PASS",
+        "POST /employee/sync": "PASS",
+        "POST /payroll/sync": "PASS",
+        "POST /accounting/sync": "PASS",
+        "GET /employee/status": "PASS",
+        "GET /payroll/status": "PASS",
+        "GET /accounting/status": "PASS"
+      }
+    },
+    {
+      "test_name": "Actuator Endpoints",
+      "passed": false,
+      "duration": 0.03794455528259277,
+      "error_message": "Actuator endpoints not available: /actuator/health, /actuator/info, /actuator/metrics, /actuator/prometheus",
+      "details": null
+    },
+    {
+      "test_name": "Camel Routes Status",
+      "passed": true,
+      "duration": 0.11639046669006348,
+      "error_message": null,
+      "details": {
+        "status": "ACTIVE_VIA_LOGS",
+        "evidence": "Timer routes detected"
+      }
+    },
+    {
+      "test_name": "Metrics Collection",
+      "passed": true,
+      "duration": 0.0077362060546875,
+      "error_message": null,
+      "details": {
+        "prometheus_status": "ACTIVE",
+        "target_count": 6
+      }
+    },
+    {
+      "test_name": "Alert Rules Configuration",
+      "passed": true,
+      "duration": 0.009717464447021484,
+      "error_message": null,
+      "details": {
+        "rule_groups": 2,
+        "total_rules": 20,
+        "status": "LOADED"
+      }
+    },
+    {
+      "test_name": "System Performance",
+      "passed": true,
+      "duration": 0.0081787109375,
+      "error_message": null,
+      "details": {
+        "response_time": 0.007594585418701172,
+        "threshold": 2.0,
+        "status": "ACCEPTABLE"
+      }
+    }
+  ],
+  "failed_tests": [
+    {
+      "test_name": "Actuator Endpoints",
+      "passed": false,
+      "duration": 0.03794455528259277,
+      "error_message": "Actuator endpoints not available: /actuator/health, /actuator/info, /actuator/metrics, /actuator/prometheus",
+      "details": null
+    }
+  ]
+}

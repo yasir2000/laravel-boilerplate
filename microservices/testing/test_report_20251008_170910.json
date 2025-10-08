@@ -1,0 +1,70 @@
+{
+  "summary": {
+    "total_tests": 9,
+    "passed_tests": 4,
+    "failed_tests": 5,
+    "success_rate": 44.44,
+    "total_duration": 0.76,
+    "timestamp": "2025-10-08T17:09:10.713444"
+  },
+  "test_results": [
+    {
+      "name": "Service Health Check",
+      "passed": false,
+      "duration": 0.065,
+      "error_message": null
+    },
+    {
+      "name": "Docker Containers Status",
+      "passed": true,
+      "duration": 0.223,
+      "error_message": null
+    },
+    {
+      "name": "Database Connectivity",
+      "passed": true,
+      "duration": 0.163,
+      "error_message": null
+    },
+    {
+      "name": "REST Endpoints",
+      "passed": false,
+      "duration": 0.111,
+      "error_message": null
+    },
+    {
+      "name": "Actuator Endpoints",
+      "passed": false,
+      "duration": 0.047,
+      "error_message": null
+    },
+    {
+      "name": "Camel Routes Status",
+      "passed": false,
+      "duration": 0.015,
+      "error_message": null
+    },
+    {
+      "name": "Metrics Collection",
+      "passed": true,
+      "duration": 0.012,
+      "error_message": null
+    },
+    {
+      "name": "Alert Rules Configuration",
+      "passed": true,
+      "duration": 0.011,
+      "error_message": null
+    },
+    {
+      "name": "System Performance",
+      "passed": false,
+      "duration": 0.011,
+      "error_message": null
+    }
+  ],
+  "recommendations": [
+    "\u274c Multiple failures detected. System needs fixes before production",
+    "Failed tests to investigate: Service Health Check, REST Endpoints, Actuator Endpoints, Camel Routes Status, System Performance"
+  ]
+}
