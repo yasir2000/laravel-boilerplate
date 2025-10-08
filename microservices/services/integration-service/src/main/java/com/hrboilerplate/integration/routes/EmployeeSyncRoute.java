@@ -21,11 +21,18 @@ public class EmployeeSyncRoute extends RouteBuilder {
             .log("Employee sync failed: ${exception.message}")
             .to("direct:handle-sync-error");
         
-        // Scheduled employee sync route - commented out for initial deployment
-        // from("cron:employeeSync?cron={{integration.sync.employee.cron}}")
-        //     .routeId("employee-sync-scheduled")
-        //     .log("Starting scheduled employee synchronization")
-        //     .to("direct:employee-sync");
+        // Scheduled employee sync route - ENABLED for automated operation
+        // Using timer component with repeatCount=0 for indefinite scheduling
+        from("timer:employeeSync?delay=60000&period=7200000&repeatCount=0") // Start after 1 min, repeat every 2 hours
+            .routeId("employee-sync-scheduled")
+            .log("Starting scheduled employee synchronization")
+            .choice()
+                .when(simple("{{integration.sync.employee.enabled}}"))
+                    .log("Employee sync is enabled, proceeding with synchronization")
+                    .to("direct:employee-sync")
+                .otherwise()
+                    .log("Employee sync is disabled, skipping synchronization")
+            .end();
 
         // Main employee sync route
         from("direct:employee-sync")

@@ -23,15 +23,21 @@ integration:
   sync:
     employee:
       enabled: true
-      cron: "0 0 2 * * ?"
+      # Timer-based scheduling: delay=60s, period=2h (7200s)
+      delay: 60000
+      period: 7200000
       batch-size: 100
     payroll:
       enabled: true
-      cron: "0 0 3 * * ?"
+      # Timer-based scheduling: delay=120s, period=3h (10800s)
+      delay: 120000
+      period: 10800000
       batch-size: 50
     accounting:
       enabled: true
-      cron: "0 0 4 * * ?"
+      # Timer-based scheduling: delay=180s, period=4h (14400s)
+      delay: 180000
+      period: 14400000
       batch-size: 50
 
 # ERP Configuration

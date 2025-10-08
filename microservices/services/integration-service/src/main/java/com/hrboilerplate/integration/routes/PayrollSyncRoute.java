@@ -20,11 +20,18 @@ public class PayrollSyncRoute extends RouteBuilder {
             .log("Payroll sync failed: ${exception.message}")
             .to("direct:handle-sync-error");
         
-        // Scheduled payroll sync route - commented out for initial deployment
-        // from("cron:payrollSync?cron={{integration.sync.payroll.cron}}")
-        //     .routeId("payroll-sync-scheduled")
-        //     .log("Starting scheduled payroll synchronization")
-        //     .to("direct:payroll-sync");
+        // Scheduled payroll sync route - ENABLED for automated operation
+        // Using timer component with different period for payroll sync (every 3 hours)
+        from("timer:payrollSync?delay=120000&period=10800000&repeatCount=0") // Start after 2 min, repeat every 3 hours
+            .routeId("payroll-sync-scheduled")
+            .log("Starting scheduled payroll synchronization")
+            .choice()
+                .when(simple("{{integration.sync.payroll.enabled}}"))
+                    .log("Payroll sync is enabled, proceeding with synchronization")
+                    .to("direct:payroll-sync")
+                .otherwise()
+                    .log("Payroll sync is disabled, skipping synchronization")
+            .end();
 
         // Main payroll sync route
         from("direct:payroll-sync")

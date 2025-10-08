@@ -15,13 +15,18 @@ public class AccountingSyncRoute extends RouteBuilder {
         
         JacksonDataFormat jsonFormat = new JacksonDataFormat();
         
-        // Scheduled accounting sync route - commented out for initial deployment
-        // from("cron:accountingSync?cron={{integration.sync.accounting.cron}}")
-        //     .routeId("accounting-sync-scheduled")
-        //     .log("Starting scheduled accounting synchronization")
-        //     .to("direct:accounting-sync");
-
-        // Main accounting sync route
+        // Scheduled accounting sync route - ENABLED for automated operation  
+        // Using timer component with different period for accounting sync (every 4 hours)
+        from("timer:accountingSync?delay=180000&period=14400000&repeatCount=0") // Start after 3 min, repeat every 4 hours
+            .routeId("accounting-sync-scheduled")
+            .log("Starting scheduled accounting synchronization")
+            .choice()
+                .when(simple("{{integration.sync.accounting.enabled}}"))
+                    .log("Accounting sync is enabled, proceeding with synchronization")
+                    .to("direct:accounting-sync")
+                .otherwise()
+                    .log("Accounting sync is disabled, skipping synchronization")
+            .end();        // Main accounting sync route
         from("direct:accounting-sync")
             .routeId("accounting-sync-main")
             .log("Accounting sync started")
