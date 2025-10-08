@@ -9,13 +9,13 @@
       "name": "erp.frappe",
       "type": "com.hrboilerplate.integration.config.ErpProperties$Frappe",
       "sourceType": "com.hrboilerplate.integration.config.ErpProperties",
-      "sourceMethod": "public com.hrboilerplate.integration.config.ErpProperties.Frappe getFrappe() "
+      "sourceMethod": "getFrappe()"
     },
     {
       "name": "erp.generic",
       "type": "com.hrboilerplate.integration.config.ErpProperties$Generic",
       "sourceType": "com.hrboilerplate.integration.config.ErpProperties",
-      "sourceMethod": "public com.hrboilerplate.integration.config.ErpProperties.Generic getGeneric() "
+      "sourceMethod": "getGeneric()"
     }
   ],
   "properties": [
@@ -37,22 +37,26 @@
     {
       "name": "erp.frappe.enabled",
       "type": "java.lang.Boolean",
-      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Frappe"
+      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Frappe",
+      "defaultValue": true
     },
     {
       "name": "erp.frappe.retry-attempts",
       "type": "java.lang.Integer",
-      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Frappe"
+      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Frappe",
+      "defaultValue": 3
     },
     {
       "name": "erp.frappe.timeout",
       "type": "java.lang.Integer",
-      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Frappe"
+      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Frappe",
+      "defaultValue": 30000
     },
     {
       "name": "erp.generic.auth-type",
       "type": "java.lang.String",
-      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Generic"
+      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Generic",
+      "defaultValue": "bearer"
     },
     {
       "name": "erp.generic.base-url",
@@ -62,7 +66,8 @@
     {
       "name": "erp.generic.enabled",
       "type": "java.lang.Boolean",
-      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Generic"
+      "sourceType": "com.hrboilerplate.integration.config.ErpProperties$Generic",
+      "defaultValue": false
     },
     {
       "name": "erp.generic.password",

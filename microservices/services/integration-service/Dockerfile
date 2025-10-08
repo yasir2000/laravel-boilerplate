@@ -1,5 +1,5 @@
 # Multi-stage build using Maven image
-FROM maven:3.8-openjdk-17 AS builder
+FROM maven:3.9-openjdk-21 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY src src
 RUN mvn clean package -DskipTests
 
 # Use OpenJDK runtime image for final stage
-FROM openjdk:17-jdk-slim
+FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 
