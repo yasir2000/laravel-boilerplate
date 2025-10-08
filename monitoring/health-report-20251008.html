@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ERP Integration System Health Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background-color: #f0f0f0; padding: 20px; border-radius: 5px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 3px; }
+        .healthy { background-color: #d4edda; color: #155724; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .critical { background-color: #f8d7da; color: #721c24; }
+        .logs { background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ERP Integration System Health Report</h1>
+        <p>Generated on: Wed, Oct  8, 2025  5:46:35 PM</p>
+    </div>
+    
+    <h2>Current Status</h2>
+    <div class="status healthy">
+        <strong>Overall System Status:</strong> 2025-10-08 17:46:22 - HEALTHY
+    </div>
+    
+    <h2>Recent Health Checks</h2>
+    <div class="logs">
+        <pre>2025-10-08 17:46:16 - 🔍 Starting system health check...
+2025-10-08 17:46:16 - Checking service health...
+2025-10-08 17:46:16 - ✅ Integration service is running
+2025-10-08 17:46:17 - ✅ Database service is running
+2025-10-08 17:46:17 - ✅ Redis service is running
+2025-10-08 17:46:17 - Checking external connectivity...
+2025-10-08 17:46:21 - ✅ External connectivity is working
+2025-10-08 17:46:21 - Checking SSL certificates...
+2025-10-08 17:46:21 - ✅ SSL certificate valid for 364 days
+2025-10-08 17:46:21 - Checking disk space...
+2025-10-08 17:46:22 - ✅ Disk usage: 69%
+2025-10-08 17:46:22 - Checking backup status...
+2025-10-08 17:46:22 - ✅ Latest backup is 0 hours old
+2025-10-08 17:46:22 - Checking integration API health...
+2025-10-08 17:46:22 - ✅ Integration API is responding
+2025-10-08 17:46:22 - ✅ All health checks passed
+2025-10-08 17:46:22 - 🔍 Health check completed
+2025-10-08 17:46:29 - ⚠️  Crontab not available - manual scheduling required
+2025-10-08 17:46:29 - 📅 Created schedule-monitoring.bat for Windows task scheduling</pre>
+    </div>
+    
+    <h2>Recent Alerts</h2>
+    <div class="logs">
+        <pre>No alerts</pre>
+    </div>
+    
+    <h2>System Information</h2>
+    <div class="logs">
+        <pre>
+Docker Containers:
+NAMES                                STATUS                  PORTS
+prometheus                           Up 43 minutes           0.0.0.0:9090->9090/tcp
+alertmanager                         Up 41 minutes           0.0.0.0:9093->9093/tcp
+integration-service                  Up 52 minutes           0.0.0.0:8083->8083/tcp
+integration-db                       Up 2 hours              0.0.0.0:5433->5432/tcp
+rabbitmq                             Up 2 hours              4369/tcp, 5671/tcp, 0.0.0.0:5672->5672/tcp, 15671/tcp, 15691-15692/tcp, 25672/tcp, 0.0.0.0:15672->15672/tcp
+redis                                Up 2 hours              0.0.0.0:6379->6379/tcp
+grafana                              Up 50 minutes           0.0.0.0:3000->3000/tcp
+laravel-boilerplate-laravel.test-1   Up 41 hours             0.0.0.0:80->80/tcp, 0.0.0.0:5173->5173/tcp, 0.0.0.0:8000-8001->8000-8001/tcp
+laravel-boilerplate-selenium-1       Up 41 hours             4444/tcp, 5900/tcp, 9000/tcp
+laravel-boilerplate-mysql-1          Up 41 hours (healthy)   0.0.0.0:3306->3306/tcp, 33060-33061/tcp
+laravel-boilerplate-meilisearch-1    Up 41 hours (healthy)   0.0.0.0:7700->7700/tcp
+laravel-boilerplate-mailpit-1        Up 41 hours (healthy)   0.0.0.0:1025->1025/tcp, 0.0.0.0:8025->8025/tcp, 1110/tcp
+
+Disk Usage:
+Filesystem      Size  Used Avail Use% Mounted on
+C:              477G  325G  153G  69% /c
+
+Recent Backups:
+
+./backups/files/:
+total 0
+drwxr-xr-x 1 yasir 197611 0 Oct  8 17:41 .
+drwxr-xr-x 1 yasir 197611 0 Oct  8 17:44 ..
+        </pre>
+    </div>
+    
+    <footer style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ccc; color: #666;">
+        <p>ERP Integration System Monitoring - Wed, Oct  8, 2025  5:46:36 PM</p>
+    </footer>
+</body>
+</html>

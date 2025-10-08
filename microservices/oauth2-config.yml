@@ -1,0 +1,28 @@
+# OAuth2 Configuration for Docker Compose
+version: '3.8'
+
+services:
+  integration-service:
+    environment:
+      - OAUTH2_ENABLED=true
+      - OAUTH2_ISSUER_URL=https://erp-integration.yourcompany.com
+      - OAUTH2_CLIENT_ID=asoath
+      - OAUTH2_CLIENT_SECRET=9f+ecPBt+JVJXiWv5jzTi0dw8EogrI817l//8wrTLr4=
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - ./oauth2/keys:/app/keys:ro
+      - ./oauth2/config:/app/config:ro
+
+  # Optional: OAuth2 Authorization Server (if using built-in)
+  oauth2-server:
+    image: openjdk:17-jre-slim
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=oauth2-server
+      - SERVER_PORT=9000
+    volumes:
+      - ./oauth2/keys:/app/keys:ro
+      - ./oauth2/config:/app/config:ro
+    depends_on:
+      - integration-db

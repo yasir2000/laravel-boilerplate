@@ -1,0 +1,8 @@
+# JWT Configuration
+jwt:
+  private-key-path: classpath:keys/jwt-private-pkcs8.pem
+  public-key-path: classpath:keys/jwt-public.pem
+  expiration: 3600
+  refresh-expiration: 86400
+  issuer: https://erp-integration.yourcompany.com
+  audience: erp-integration-api

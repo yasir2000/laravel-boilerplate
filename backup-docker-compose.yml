@@ -1,0 +1,25 @@
+# Backup System Docker Compose Configuration
+version: '3.8'
+
+services:
+  backup-agent:
+    image: alpine:latest
+    container_name: backup-agent
+    volumes:
+      - ./backups:/backup
+      - .:/workspace:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - BACKUP_SCHEDULE=0 2 * * *
+    command: |
+      sh -c "
+        apk add --no-cache curl postgresql-client mysql-client mongodb-tools openssl aws-cli &&
+        crond -f
+      "
+    restart: unless-stopped
+    networks:
+      - integration-network
+
+networks:
+  integration-network:
+    external: true
