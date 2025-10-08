@@ -82,12 +82,14 @@ services:
       - "9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./microservices/monitoring/prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
     networks:
       - integration-network
     restart: unless-stopped
@@ -111,6 +113,23 @@ services:
     restart: unless-stopped
     depends_on:
       - prometheus
+
+  # Alertmanager for Alert Management
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./microservices/monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    networks:
+      - integration-network
+    restart: unless-stopped
 
   # Frappe/ERPNext (Optional - for testing)
   frappe:
@@ -139,4 +158,5 @@ volumes:
   redis_data:
   prometheus_data:
   grafana_data:
+  alertmanager_data:
   frappe_data:

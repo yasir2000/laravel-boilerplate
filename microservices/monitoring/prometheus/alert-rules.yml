@@ -1,0 +1,242 @@
+groups:
+  - name: apache-camel-erp-integration
+    interval: 30s
+    rules:
+      # Service Availability Alerts
+      - alert: IntegrationServiceDown
+        expr: up{job="integration-service"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: integration-service
+          category: availability
+        annotations:
+          summary: "Apache Camel Integration Service is down"
+          description: "The integration service has been down for more than 2 minutes. All ERP synchronization has stopped."
+          runbook_url: "https://wiki.company.com/runbooks/integration-service-down"
+
+      - alert: DatabaseConnectionLoss
+        expr: hikaricp_connections_active{job="integration-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: integration-service
+          category: database
+        annotations:
+          summary: "Database connection pool has no active connections"
+          description: "Integration service has lost all database connections. Data persistence is affected."
+
+      # Sync Operation Alerts
+      - alert: EmployeeSyncFailures
+        expr: increase(camel_exchanges_failed_total{route_id=~"employee.*"}[10m]) > 3
+        for: 5m
+        labels:
+          severity: major
+          service: integration-service
+          category: sync-failure
+          module: employee
+        annotations:
+          summary: "High employee sync failure rate"
+          description: "Employee synchronization has failed {{ $value }} times in the last 10 minutes."
+
+      - alert: PayrollSyncFailures
+        expr: increase(camel_exchanges_failed_total{route_id=~"payroll.*"}[15m]) > 2
+        for: 5m
+        labels:
+          severity: major
+          service: integration-service
+          category: sync-failure
+          module: payroll
+        annotations:
+          summary: "High payroll sync failure rate"
+          description: "Payroll synchronization has failed {{ $value }} times in the last 15 minutes."
+
+      - alert: AccountingSyncFailures
+        expr: increase(camel_exchanges_failed_total{route_id=~"accounting.*"}[20m]) > 2
+        for: 5m
+        labels:
+          severity: major
+          service: integration-service
+          category: sync-failure
+          module: accounting
+        annotations:
+          summary: "High accounting sync failure rate"
+          description: "Accounting synchronization has failed {{ $value }} times in the last 20 minutes."
+
+      # Performance Alerts
+      - alert: HighErrorRate
+        expr: (rate(http_server_requests_seconds_count{job="integration-service",status=~"5.."}[5m]) / rate(http_server_requests_seconds_count{job="integration-service"}[5m])) * 100 > 10
+        for: 3m
+        labels:
+          severity: major
+          service: integration-service
+          category: performance
+        annotations:
+          summary: "High HTTP error rate detected"
+          description: "HTTP error rate is {{ $value }}% which is above the 10% threshold."
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job="integration-service"}[5m])) > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: integration-service
+          category: performance
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s, which exceeds 5s threshold."
+
+      - alert: HighMemoryUsage
+        expr: (jvm_memory_used_bytes{job="integration-service",area="heap"} / jvm_memory_max_bytes{job="integration-service",area="heap"}) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          service: integration-service
+          category: resource
+        annotations:
+          summary: "High JVM heap memory usage"
+          description: "JVM heap memory usage is {{ $value }}%, approaching the limit."
+
+      # Route Health Alerts
+      - alert: CamelRoutesStopped
+        expr: camel_context_status{job="integration-service"} != 2
+        for: 2m
+        labels:
+          severity: critical
+          service: integration-service
+          category: camel-context
+        annotations:
+          summary: "Camel context is not running"
+          description: "Camel context status indicates it's not in running state. All routes are affected."
+
+      - alert: LowRouteExchangeRate
+        expr: rate(camel_route_exchanges_total{job="integration-service"}[10m]) < 0.001
+        for: 15m
+        labels:
+          severity: warning
+          service: integration-service
+          category: route-health
+        annotations:
+          summary: "Low route exchange activity"
+          description: "Route exchange rate is very low, indicating possible connectivity issues."
+
+      # ERP Connectivity Alerts
+      - alert: ERPConnectionFailures
+        expr: increase(http_client_requests_seconds_count{job="integration-service",status=~"5..|4.."}[5m]) > 10
+        for: 3m
+        labels:
+          severity: major
+          service: integration-service
+          category: erp-connectivity
+        annotations:
+          summary: "High ERP connection failure rate"
+          description: "{{ $value }} ERP connection failures detected in the last 5 minutes."
+
+      # Data Synchronization Alerts
+      - alert: SyncDataInconsistency
+        expr: abs(camel_route_exchanges_total{route_id="employee-sync-main"} - camel_route_exchanges_total{route_id="send-employees-to-frappe"}) > 50
+        for: 10m
+        labels:
+          severity: warning
+          service: integration-service
+          category: data-consistency
+          module: employee
+        annotations:
+          summary: "Employee data sync inconsistency detected"
+          description: "Difference between fetched and sent employee records exceeds threshold."
+
+      # Resource Exhaustion Alerts
+      - alert: DatabaseConnectionPoolExhaustion
+        expr: (hikaricp_connections_active{job="integration-service"} / hikaricp_connections_max{job="integration-service"}) * 100 > 90
+        for: 2m
+        labels:
+          severity: warning
+          service: integration-service
+          category: resource
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "Active database connections are {{ $value }}% of maximum pool size."
+
+      - alert: ThreadPoolExhaustion
+        expr: jvm_threads_live{job="integration-service"} > 200
+        for: 3m
+        labels:
+          severity: warning
+          service: integration-service
+          category: resource
+        annotations:
+          summary: "High thread count detected"
+          description: "Live thread count is {{ $value }}, which may indicate thread pool exhaustion."
+
+      # Business Logic Alerts
+      - alert: PayrollProcessingDelay
+        expr: time() - camel_route_last_processing_time{route_id="payroll-sync-scheduled"} > 14400
+        for: 5m
+        labels:
+          severity: major
+          service: integration-service
+          category: business-logic
+          module: payroll
+        annotations:
+          summary: "Payroll processing significantly delayed"
+          description: "Payroll sync hasn't run for over 4 hours, beyond normal 3-hour schedule."
+
+      - alert: AccountingDataStale
+        expr: time() - camel_route_last_processing_time{route_id="accounting-sync-scheduled"} > 18000
+        for: 5m
+        labels:
+          severity: major
+          service: integration-service
+          category: business-logic
+          module: accounting
+        annotations:
+          summary: "Accounting data synchronization stale"
+          description: "Accounting sync hasn't run for over 5 hours, beyond normal 4-hour schedule."
+
+  # Prometheus and Infrastructure Alerts
+  - name: infrastructure-monitoring
+    interval: 30s
+    rules:
+      - alert: PrometheusDown
+        expr: up{job="prometheus"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: prometheus
+          category: infrastructure
+        annotations:
+          summary: "Prometheus monitoring is down"
+          description: "Prometheus has been down for more than 2 minutes. Monitoring capabilities are compromised."
+
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 3m
+        labels:
+          severity: major
+          service: grafana
+          category: infrastructure
+        annotations:
+          summary: "Grafana dashboard service is down"
+          description: "Grafana has been down for more than 3 minutes. Dashboard access is unavailable."
+
+      - alert: PostgreSQLDown
+        expr: up{job="postgresql"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: postgresql
+          category: infrastructure
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "PostgreSQL database has been down for more than 1 minute. Data persistence is affected."
+
+      - alert: RabbitMQDown
+        expr: up{job="rabbitmq"} == 0
+        for: 2m
+        labels:
+          severity: major
+          service: rabbitmq
+          category: infrastructure
+        annotations:
+          summary: "RabbitMQ message broker is down"
+          description: "RabbitMQ has been down for more than 2 minutes. Message queuing is unavailable."
