@@ -100,13 +100,17 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./microservices/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./microservices/monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./microservices/monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
     networks:
       - integration-network
     restart: unless-stopped
+    depends_on:
+      - prometheus
 
   # Frappe/ERPNext (Optional - for testing)
   frappe:

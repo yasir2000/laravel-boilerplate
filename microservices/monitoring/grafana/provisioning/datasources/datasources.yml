@@ -1,0 +1,36 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus-Integration
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    basicAuth: false
+    isDefault: true
+    version: 1
+    editable: false
+    jsonData:
+      httpMethod: POST
+      queryTimeout: "60s"
+      timeInterval: "30s"
+    secureJsonData: {}
+    
+  - name: PostgreSQL-Integration
+    type: postgres
+    access: proxy
+    orgId: 1
+    url: integration-db:5432
+    database: integration_db
+    user: integration_user
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    jsonData:
+      sslmode: "disable"
+      maxOpenConns: 10
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: "integration_pass"
