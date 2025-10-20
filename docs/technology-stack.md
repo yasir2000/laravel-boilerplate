@@ -2,10 +2,19 @@
 
 ## 🛠️ Complete Technology Stack Overview
 
-This document provides a comprehensive reference of all technologies, tools, frameworks, and libraries used in the Laravel HR Boilerplate system.
+This document provides a comprehensive reference of all technologies, tools, frameworks, and libraries used in the Laravel HR Boilerplate system, including the advanced **AI Agents automation system**.
 
 ```mermaid
 graph TB
+    subgraph "AI Agents System"
+        CrewAI[CrewAI Framework]
+        ExtJS[ExtJS 7.0+ Dashboard]
+        SQLite[SQLite Agent Storage]
+        NLP[Natural Language Processing]
+        Workflows[Workflow Engine]
+        Agents[12 Specialized Agents]
+    end
+    
     subgraph "Frontend Technologies"
         Vue[Vue.js 3.4+]
         Inertia[Inertia.js 1.0+]
@@ -90,6 +99,58 @@ graph TB
     class Docker,Sail,Nginx,Supervisor,Git,GitHub devops
     class Fortify,Sanctum,Spatie_Permissions,Bcrypt,CSRF,Rate_Limiting security
 ```
+
+## 🤖 AI Agents System
+
+### AI Framework & Engine
+| Technology | Version | Purpose | Documentation |
+|------------|---------|---------|---------------|
+| **CrewAI** | Latest | Multi-Agent Collaboration Framework | [CrewAI Docs](https://crewai.com/docs) |
+| **ExtJS** | 7.0+ | Rich Dashboard Interface | [ExtJS Docs](https://docs.sencha.com/extjs/7.0.0/) |
+| **SQLite** | 3.45+ | Agent Data Storage | [SQLite Docs](https://sqlite.org/docs.html) |
+
+### Core Agents (6)
+| Agent | ID | Role | Purpose |
+|-------|----|----- |---------|
+| **HR Agent** | hr_001 | Human Resources Coordinator | Employee relations and HR processes |
+| **Project Manager** | pm_001 | Project Coordination Specialist | Workflow orchestration and task coordination |
+| **Analytics Agent** | analytics_001 | Data Analysis Specialist | Insights, reporting, and data analysis |
+| **Workflow Engine** | workflow_001 | Process Automation Manager | Workflow execution and state management |
+| **Integration Agent** | integration_001 | System Integration Coordinator | Data flow and system integrations |
+| **Notification Agent** | notification_001 | Communication Manager | All notifications and communications |
+
+### Specialized Agents (6)
+| Agent | ID | Specialization | Queue Management |
+|-------|----|----- |---------|
+| **IT Support** | it_001 | System Administration | 10 tasks queue |
+| **Compliance** | compliance_001 | Regulatory Compliance | Policy adherence monitoring |
+| **Training** | training_001 | Employee Development | Training coordination |
+| **Payroll** | payroll_001 | Payroll Processing | Exception handling |
+| **Leave Processing** | leave_001 | Leave Management | Approval workflows |
+| **Coverage** | coverage_001 | Staff Scheduling | Coverage optimization |
+
+### Workflow Types (8)
+```mermaid
+graph TD
+    subgraph "AI Workflow Types"
+        A[Employee Onboarding] --> B[2-5 business days]
+        C[Leave Management] --> D[1-3 business days]
+        E[Performance Reviews] --> F[2-4 weeks]
+        G[Payroll Processing] --> H[1-2 business days]
+        I[Employee Queries] --> J[30min - 2 hours]
+        K[Recruitment] --> L[2-6 weeks]
+        M[Compliance Monitoring] --> N[Real-time/Ongoing]
+        O[Training Coordination] --> P[Program-based]
+    end
+```
+
+### Dashboard Technology
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Frontend** | ExtJS 7.0+ | Rich interactive dashboard |
+| **Real-time** | WebSockets | Live agent monitoring |
+| **Visualization** | ExtJS Charts | Performance metrics and analytics |
+| **API Integration** | Laravel Sanctum | Secure API communication |
 
 ## 🎯 Core Framework & Runtime
 

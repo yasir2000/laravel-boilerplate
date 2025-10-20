@@ -3,6 +3,7 @@
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [🤖 AI Agents System](./ai-agents-user-guide.md)
 - [🛠️ Technology Stack Reference](./technology-stack.md)
 - [Architecture Documentation](#architecture-documentation)
 - [HR Modules Documentation](#hr-modules-documentation)
@@ -14,13 +15,13 @@
 
 ## Overview
 
-This is a comprehensive Laravel 10 HR (Human Resources) boilerplate system built with modern technologies and best practices. The system provides a complete HR management solution with employee management, attendance tracking, payroll, performance management, and more.
+This is a comprehensive Laravel 10 HR (Human Resources) boilerplate system built with modern technologies and best practices. The system provides a complete HR management solution with employee management, attendance tracking, payroll, performance management, and **intelligent AI-powered automation**.
 
 ### Key Technologies
 
 - **Backend**: Laravel 10, PHP 8.3+
-- **Frontend**: Vue.js 3, Inertia.js, Tailwind CSS
-- **Database**: MySQL 8.0
+- **Frontend**: Vue.js 3, Inertia.js, Tailwind CSS, ExtJS (AI Dashboard)
+- **Database**: MySQL 8.0, SQLite (AI Agents)
 - **Cache**: Redis
 - **Search**: Meilisearch
 - **Performance**: Laravel Octane with FrankenPHP
@@ -28,8 +29,17 @@ This is a comprehensive Laravel 10 HR (Human Resources) boilerplate system built
 - **Authentication**: Laravel Fortify + Spatie Permissions
 - **File Management**: Spatie Media Library
 - **Localization**: Multi-language support (EN/AR)
+- **AI Framework**: CrewAI Multi-Agent System
 
 ### System Features
+
+#### 🤖 **AI Agents System**
+- 12 Specialized AI Agents (6 Core + 6 Specialized)
+- Automated Workflow Processing
+- Intelligent Employee Query Handling
+- Real-time Agent Monitoring Dashboard
+- Natural Language Processing Capabilities
+- Smart Task Orchestration & Coordination
 
 #### 🏢 **Core HR Modules**
 - Employee Management
@@ -52,6 +62,15 @@ This is a comprehensive Laravel 10 HR (Human Resources) boilerplate system built
 - CI/CD ready
 - Dockerized development environment
 - High-performance Octane server
+- **Responsive grid layouts** for optimal viewing
+- **Mobile-first design** approach
+
+## 📚 Documentation Index
+
+### 🤖 AI Agents System
+- **[AI Agents User Guide](./ai-agents-user-guide.md)** - Complete user manual for the AI Agents system
+- **[AI Agents API Documentation](./api/ai-agents-api.md)** - Comprehensive API reference
+- **[AI Agents Setup Guide](./development/ai-agents-setup.md)** - Installation and configuration
 
 ## Architecture Documentation
 

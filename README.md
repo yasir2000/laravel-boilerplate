@@ -1,8 +1,15 @@
 # Laravel Business Boilerplate
 
-A comprehensive Laravel boilerplate application for business scenarios with PostgreSQL integration, featuring advanced authentication, workflow engine, real-time notifications, file storage, and multi-language support.
+A comprehensive Laravel boilerplate application for business scenarios with PostgreSQL integration, featuring advanced authentication, workflow engine, real-time notifications, file storage, multi-language support, and **AI-powered automation system**.
 
 ## 🚀 Features
+
+### 🤖 AI Agents System (NEW!)
+- **12 Specialized AI Agents** - CrewAI-powered automation for HR workflows
+- **8 Workflow Types** - Automated employee onboarding, leave management, performance reviews
+- **Real-time Dashboard** - Monitor agent status, system health, and workflow progress
+- **Intelligent Processing** - Natural language query processing and smart task automation
+- **Integration Layer** - Seamless integration with existing HR modules
 
 ### Core Business Features
 - **Multi-tenant Company Management** - Complete company structure with users and roles
@@ -58,6 +65,12 @@ A comprehensive Laravel boilerplate application for business scenarios with Post
 - **Database Optimization** - Proper indexing and relationships
 - **API Rate Limiting** - Built-in API protection
 
+### AI Agents Architecture
+- **Core Agents (6)**: HR Agent, Project Manager Agent, Analytics Agent, Workflow Engine Agent, Integration Agent, Notification Agent
+- **Specialized Agents (6)**: IT Support Agent, Compliance Agent, Training Agent, Payroll Agent, Leave Processing Agent, Coverage Agent
+- **Workflow Management**: Employee onboarding, leave management, performance reviews, payroll processing, compliance monitoring, recruitment automation
+- **Smart Dashboard**: Real-time monitoring, health indicators, activity feeds, and interactive controls
+
 ## 🛠 Technology Stack
 
 ### 🐳 Docker Architecture
@@ -68,6 +81,15 @@ A comprehensive Laravel boilerplate application for business scenarios with Post
 - **Search:** Meilisearch
 - **Email Testing:** Mailpit
 - **Queue Management:** Built-in with Redis backend
+- **AI Agents:** CrewAI collaborative agent system
+
+### 🤖 AI Technology Stack
+
+- **CrewAI Framework:** Multi-agent collaboration and orchestration
+- **Laravel Integration:** Native PHP integration layer
+- **Real-time Communication:** WebSocket connections for live updates
+- **ExtJS Dashboard:** Rich interactive dashboard for monitoring
+- **SQLite Storage:** Efficient agent data and workflow state management
 
 ## Installation
 
@@ -169,10 +191,24 @@ php artisan key:generate
 php artisan migrate --seed
 ```
 
-7. Start the development server:
+7. Configure AI Agents (Optional):
+```bash
+# Copy AI Agents environment settings
+cp .env.example .env.ai-agents
+
+# Enable AI Agents features
+php artisan config:cache
+```
+
+8. Start the development server:
 ```bash
 php artisan serve
 ```
+
+**Access Points:**
+- **Main Application:** http://localhost:8000
+- **AI Agents Dashboard:** http://localhost:8000/ai-agents
+- **API Documentation:** http://localhost:8000/api/test/dashboard
 
 ### Docker Installation
 
@@ -244,6 +280,21 @@ All API endpoints (except health check) require authentication using Laravel San
 - `GET /api/reports/tasks/summary` - Get task summary report
 - `GET /api/reports/projects/summary` - Get project summary report
 
+#### AI Agents System
+- `GET /api/ai-agents/agents/status` - Get all agents status
+- `GET /api/ai-agents/system/health` - Get system health metrics
+- `GET /api/ai-agents/workflows/active` - List active workflows
+- `POST /api/ai-agents/workflows/start` - Start new workflow
+- `POST /api/ai-agents/workflows/{id}/pause` - Pause workflow
+- `GET /api/ai-agents/activity/feed` - Get activity feed
+- `POST /api/ai-agents/queries/process` - Process employee query
+
+#### Test Endpoints (No Authentication Required)
+- `GET /api/test/agents/status` - Test agents status
+- `GET /api/test/system/health` - Test system health
+- `GET /api/test/workflows/active` - Test workflows
+- `GET /api/test/dashboard` - AI Agents dashboard view
+
 ### Sample API Requests
 
 #### Create a Company
@@ -280,6 +331,36 @@ curl -X POST http://localhost:8000/api/projects \
     "budget": 50000.00,
     "client_name": "John Doe",
     "client_email": "john.doe@client.com"
+  }'
+```
+
+#### Start AI Agent Workflow
+```bash
+curl -X POST http://localhost:8000/api/ai-agents/workflows/start \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {token}" \
+  -d '{
+    "workflow_type": "employee_onboarding",
+    "employee_id": 123,
+    "department": "Engineering",
+    "priority": "high",
+    "metadata": {
+      "start_date": "2024-01-15",
+      "manager_id": 456,
+      "equipment_needed": ["laptop", "access_card"]
+    }
+  }'
+```
+
+#### Process Employee Query
+```bash
+curl -X POST http://localhost:8000/api/ai-agents/queries/process \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {token}" \
+  -d '{
+    "query": "How do I request time off for next week?",
+    "employee_id": 123,
+    "priority": "medium"
   }'
 ```
 
