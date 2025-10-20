@@ -1,0 +1,590 @@
+/**
+ * AI Agents Dashboard Styles
+ */
+.agents-dashboard {
+    background: #f5f5f5;
+}
+
+.agents-dashboard .x-panel-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    border: none;
+}
+
+/* Agent Cards Styling */
+.agents-container {
+    padding: 10px;
+}
+
+.agent-card {
+    background: white;
+    border-radius: 8px;
+    margin: 10px 0;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.agent-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.agent-card.healthy {
+    border-left: 4px solid #27ae60;
+}
+
+.agent-card.degraded {
+    border-left: 4px solid #f39c12;
+}
+
+.agent-card.error {
+    border-left: 4px solid #e74c3c;
+}
+
+.agent-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.agent-header i {
+    font-size: 24px;
+    margin-right: 10px;
+    color: #3498db;
+}
+
+.agent-name {
+    font-weight: bold;
+    font-size: 14px;
+    flex: 1;
+}
+
+.agent-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-healthy {
+    background: #d5f4e6;
+    color: #27ae60;
+}
+
+.status-degraded {
+    background: #fdeaa7;
+    color: #f39c12;
+}
+
+.status-error {
+    background: #fadbd8;
+    color: #e74c3c;
+}
+
+.agent-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.agent-metric {
+    text-align: center;
+}
+
+.metric-label {
+    display: block;
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-bottom: 2px;
+}
+
+.metric-value {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* System Health Styling */
+.health-overview {
+    padding: 15px;
+    text-align: center;
+}
+
+.health-metric.overall-health {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.health-metric.healthy {
+    border-left: 4px solid #27ae60;
+}
+
+.health-metric.degraded {
+    border-left: 4px solid #f39c12;
+}
+
+.health-metric.critical {
+    border-left: 4px solid #e74c3c;
+}
+
+.health-title {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 5px;
+}
+
+.health-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.health-status {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.health-details {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.health-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.health-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.health-item .label {
+    color: #7f8c8d;
+    font-size: 12px;
+}
+
+.health-item .value {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 12px;
+}
+
+/* Emergency Button */
+.emergency-button {
+    background: #e74c3c !important;
+    border-color: #c0392b !important;
+    color: white !important;
+}
+
+.emergency-button:hover {
+    background: #c0392b !important;
+}
+
+/* Workflow Grid Styling */
+.workflow-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #d5f4e6;
+    color: #27ae60;
+}
+
+.status-completed {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+.status-paused {
+    background: #fdeaa7;
+    color: #f39c12;
+}
+
+.status-error {
+    background: #fadbd8;
+    color: #e74c3c;
+}
+
+/* Progress Bar */
+.progress-bar {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    background: #ecf0f1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+}
+
+/* Workflow Templates */
+.workflow-templates {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.template-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.template-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.template-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.template-header i {
+    font-size: 32px;
+    margin-right: 15px;
+    color: #3498db;
+}
+
+.template-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 18px;
+}
+
+.template-body .description {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.template-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.template-stats .stat {
+    text-align: center;
+}
+
+.template-stats .label {
+    display: block;
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-bottom: 2px;
+}
+
+.template-stats .value {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.template-footer {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-start, .btn-configure {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-start {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-start:hover {
+    background: #219a52;
+}
+
+.btn-configure {
+    background: #ecf0f1;
+    color: #2c3e50;
+}
+
+.btn-configure:hover {
+    background: #d5dbdb;
+}
+
+/* Activity Feed */
+.activity-feed {
+    padding: 15px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.activity-time {
+    min-width: 60px;
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-right: 15px;
+}
+
+.activity-icon {
+    min-width: 30px;
+    text-align: center;
+    margin-right: 15px;
+}
+
+.activity-icon i {
+    font-size: 16px;
+    color: #3498db;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.activity-description {
+    color: #7f8c8d;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.activity-agent {
+    color: #3498db;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* KPI Panels */
+.kpi-panel {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 20px;
+}
+
+.kpi-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.kpi-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.kpi-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+}
+
+.kpi-change {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.kpi-change.positive {
+    color: #27ae60;
+}
+
+.kpi-change.negative {
+    color: #e74c3c;
+}
+
+/* Memory Usage */
+.memory-usage {
+    padding: 10px;
+    text-align: center;
+}
+
+.usage-bar {
+    width: 100%;
+    height: 20px;
+    background: #ecf0f1;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.usage-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    transition: width 0.3s ease;
+}
+
+.usage-text {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+/* Response Time */
+.response-time {
+    padding: 10px;
+    text-align: center;
+}
+
+.time-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-right: 10px;
+}
+
+.time-trend {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.time-trend.up {
+    color: #e74c3c;
+}
+
+.time-trend.down {
+    color: #27ae60;
+}
+
+/* Health Report */
+.health-report {
+    font-family: Arial, sans-serif;
+}
+
+.health-report h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.health-report h3 {
+    color: #34495e;
+    margin: 15px 0 10px 0;
+}
+
+.health-report .overall-health {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.health-report .overall-health.healthy {
+    background: #d5f4e6;
+    color: #27ae60;
+}
+
+.health-report .overall-health.degraded {
+    background: #fdeaa7;
+    color: #f39c12;
+}
+
+.health-report .overall-health.critical {
+    background: #fadbd8;
+    color: #e74c3c;
+}
+
+.health-report .percentage {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.health-report ul {
+    list-style: none;
+    padding: 0;
+}
+
+.health-report li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.health-report li.healthy {
+    color: #27ae60;
+}
+
+.health-report li.error {
+    color: #e74c3c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .workflow-templates {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+    
+    .template-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .template-footer {
+        flex-direction: column;
+    }
+    
+    .agent-details {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

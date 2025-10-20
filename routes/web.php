@@ -49,6 +49,11 @@ Route::get('/hr-dashboard', function () {
     ]);
 })->middleware(['auth'])->name('hr.dashboard.main');
 
+// AI Agents Dashboard route
+Route::get('/ai-agents', function () {
+    return view('ai-agents.dashboard');
+})->middleware(['auth'])->name('ai.agents.dashboard');
+
 // Profile Routes
 Route::get('/profile', function () {
     return Inertia::render('Profile/Show');

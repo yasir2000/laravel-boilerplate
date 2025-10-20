@@ -6,24 +6,15 @@ use App\Http\Controllers\API\AIAgentsController;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| AI Agents API Routes
 |--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for AI agents functionality.
+| These routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group.
+|
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-// Public routes
-Route::get('/health', function () {
-    return response()->json([
-        'status' => 'healthy',
-        'timestamp' => now(),
-        'version' => '1.0.0',
-    ]);
-});
-
-// AI Agents API Routes
 Route::middleware(['auth:sanctum'])->prefix('ai-agents')->group(function () {
     
     // Agent Status and Health
@@ -43,4 +34,9 @@ Route::middleware(['auth:sanctum'])->prefix('ai-agents')->group(function () {
     
     // Employee Query Processing
     Route::post('/queries/process', [AIAgentsController::class, 'processEmployeeQuery']);
+});
+
+// Public routes (if needed for health checks, etc.)
+Route::prefix('ai-agents/public')->group(function () {
+    Route::get('/status', [AIAgentsController::class, 'getSystemHealth']);
 });

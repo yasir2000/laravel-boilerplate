@@ -508,7 +508,293 @@ class WorkflowOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-# Additional helper methods would continue here for the remaining use cases...
+    async def _initiate_performance_review(self, review_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Initiate performance review process"""
+        try:
+            employee_id = review_data.get("employee_id")
+            review_period = review_data.get("review_period")
+            reviewers = review_data.get("reviewers", [])
+            
+            # Create review workflow
+            workflow_data = {
+                "name": f"Performance Review - Employee {employee_id}",
+                "model_type": "PerformanceReview",
+                "model_id": f"review_{employee_id}_{review_period}",
+                "steps": [
+                    {"name": "Data Collection", "assignee_type": "system", "order": 1},
+                    {"name": "Feedback Collection", "assignee_type": "reviewers", "order": 2},
+                    {"name": "Manager Review", "assignee_type": "manager", "order": 3},
+                    {"name": "HR Review", "assignee_type": "hr", "order": 4}
+                ]
+            }
+            
+            workflow_result = AGENT_TOOLS["workflow_engine"]._run("create", workflow_data)
+            
+            # Assign reviewers
+            assigned_reviewers = []
+            for reviewer in reviewers:
+                assigned_reviewers.append({
+                    "reviewer_id": reviewer.get("id"),
+                    "reviewer_type": reviewer.get("type"),
+                    "status": "pending",
+                    "deadline": (datetime.now() + timedelta(days=7)).isoformat()
+                })
+            
+            return {
+                "success": True,
+                "workflow_id": workflow_result.get("data", {}).get("id"),
+                "assigned_reviewers": assigned_reviewers,
+                "review_initiated": True
+            }
+            
+        except Exception as e:
+            logger.error(f"Error initiating performance review: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    async def _collect_performance_data(self, review_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Collect performance data from various sources"""
+        try:
+            employee_id = review_data.get("employee_id")
+            review_period = review_data.get("review_period")
+            
+            # Get project participation data
+            project_query = """
+            SELECT p.name, t.status, t.completion_date, t.quality_score
+            FROM projects p
+            JOIN tasks t ON p.id = t.project_id
+            WHERE t.assigned_to = :employee_id
+            AND t.created_at >= :start_period
+            """
+            
+            project_data = AGENT_TOOLS["database_query"]._run(
+                project_query,
+                {"employee_id": employee_id, "start_period": f"{review_period}-01-01"}
+            )
+            
+            # Get attendance data
+            attendance_query = """
+            SELECT AVG(hours_worked) as avg_hours, 
+                   COUNT(*) as total_days,
+                   SUM(CASE WHEN hours_worked >= 8 THEN 1 ELSE 0 END) as full_days
+            FROM attendance
+            WHERE employee_id = :employee_id
+            AND date >= :start_period
+            """
+            
+            attendance_data = AGENT_TOOLS["database_query"]._run(
+                attendance_query,
+                {"employee_id": employee_id, "start_period": f"{review_period}-01-01"}
+            )
+            
+            # Get goal achievement data
+            goals_query = """
+            SELECT goal_description, target_value, actual_value, achievement_percentage
+            FROM employee_goals
+            WHERE employee_id = :employee_id
+            AND goal_period = :review_period
+            """
+            
+            goals_data = AGENT_TOOLS["database_query"]._run(
+                goals_query,
+                {"employee_id": employee_id, "review_period": review_period}
+            )
+            
+            return {
+                "success": True,
+                "performance_data": {
+                    "projects": project_data.get("data", []) if project_data.get("success") else [],
+                    "attendance": attendance_data.get("data", [{}])[0] if attendance_data.get("success") else {},
+                    "goals": goals_data.get("data", []) if goals_data.get("success") else []
+                },
+                "data_collection_complete": True
+            }
+            
+        except Exception as e:
+            logger.error(f"Error collecting performance data: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    async def _coordinate_feedback_collection(self, review_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Coordinate feedback collection from reviewers"""
+        try:
+            employee_id = review_data.get("employee_id")
+            reviewers = review_data.get("reviewers", [])
+            
+            feedback_requests = []
+            for reviewer in reviewers:
+                # Send feedback request email
+                email_result = AGENT_TOOLS["email_sender"]._run(
+                    reviewer.get("email", ""),
+                    "Performance Review Feedback Required",
+                    f"Please provide feedback for employee {employee_id}. Deadline: {(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')}"
+                )
+                
+                feedback_requests.append({
+                    "reviewer_id": reviewer.get("id"),
+                    "reviewer_type": reviewer.get("type"),
+                    "email_sent": email_result.get("success", False),
+                    "deadline": (datetime.now() + timedelta(days=7)).isoformat()
+                })
+            
+            return {
+                "success": True,
+                "feedback_requests": feedback_requests,
+                "total_requests_sent": len([r for r in feedback_requests if r["email_sent"]]),
+                "coordination_complete": True
+            }
+            
+        except Exception as e:
+            logger.error(f"Error coordinating feedback collection: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    async def _compile_performance_analysis(self, analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Compile comprehensive performance analysis"""
+        try:
+            employee_id = analysis_data.get("employee_id")
+            performance_data = analysis_data.get("performance_data", {})
+            feedback_data = analysis_data.get("feedback_data", {})
+            analytics_data = analysis_data.get("analytics_data", {})
+            
+            # Analyze project performance
+            projects = performance_data.get("projects", [])
+            project_score = 0
+            if projects:
+                completed_projects = len([p for p in projects if p.get("status") == "completed"])
+                project_score = (completed_projects / len(projects)) * 100
+            
+            # Analyze attendance
+            attendance = performance_data.get("attendance", {})
+            attendance_score = min((attendance.get("avg_hours", 0) / 8) * 100, 100)
+            
+            # Analyze goal achievement
+            goals = performance_data.get("goals", [])
+            goal_score = 0
+            if goals:
+                avg_achievement = sum([g.get("achievement_percentage", 0) for g in goals]) / len(goals)
+                goal_score = avg_achievement
+            
+            # Calculate overall performance score
+            overall_score = (project_score * 0.4 + attendance_score * 0.3 + goal_score * 0.3)
+            
+            # Generate recommendations
+            recommendations = []
+            if project_score < 75:
+                recommendations.append("Focus on project completion and delivery")
+            if attendance_score < 90:
+                recommendations.append("Improve attendance and time management")
+            if goal_score < 80:
+                recommendations.append("Work on achieving set goals and targets")
+            
+            if overall_score >= 90:
+                recommendations.append("Consider for promotion or leadership opportunities")
+            elif overall_score >= 75:
+                recommendations.append("Solid performance, identify areas for growth")
+            else:
+                recommendations.append("Performance improvement plan may be needed")
+            
+            return {
+                "success": True,
+                "performance_summary": {
+                    "overall_score": round(overall_score, 2),
+                    "project_performance": round(project_score, 2),
+                    "attendance_score": round(attendance_score, 2),
+                    "goal_achievement": round(goal_score, 2),
+                    "rating": "Excellent" if overall_score >= 90 else "Good" if overall_score >= 75 else "Needs Improvement"
+                },
+                "recommendations": recommendations,
+                "analysis_complete": True
+            }
+            
+        except Exception as e:
+            logger.error(f"Error compiling performance analysis: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    async def _analyze_payroll_patterns(self, pattern_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze payroll exception patterns"""
+        try:
+            exceptions = pattern_data.get("exceptions", [])
+            
+            # Analyze exception patterns
+            exception_types = {}
+            for exception in exceptions:
+                exc_type = exception.get("exception_type")
+                if exc_type not in exception_types:
+                    exception_types[exc_type] = 0
+                exception_types[exc_type] += 1
+            
+            # Identify trends
+            trends = []
+            if exception_types.get("gross_pay_discrepancy", 0) > 5:
+                trends.append("High number of pay calculation errors - review payroll system")
+            if exception_types.get("excessive_overtime", 0) > 3:
+                trends.append("Multiple overtime violations - review approval process")
+            if exception_types.get("excessive_deductions", 0) > 2:
+                trends.append("Deduction issues detected - verify benefit calculations")
+            
+            return {
+                "success": True,
+                "pattern_analysis": {
+                    "exception_breakdown": exception_types,
+                    "total_exceptions": len(exceptions),
+                    "trends_identified": trends,
+                    "risk_level": "high" if len(exceptions) > 10 else "medium" if len(exceptions) > 5 else "low"
+                }
+            }
+            
+        except Exception as e:
+            logger.error(f"Error analyzing payroll patterns: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    async def _resolve_payroll_exception(self, exception: Dict[str, Any]) -> Dict[str, Any]:
+        """Resolve individual payroll exception"""
+        try:
+            exception_type = exception.get("exception_type")
+            
+            if exception_type == "gross_pay_discrepancy":
+                # Auto-resolve if variance is small
+                variance = abs(exception.get("variance", 0))
+                if variance <= 10:  # $10 threshold for auto-resolution
+                    return {
+                        "success": True,
+                        "resolution": "auto_adjusted",
+                        "adjusted_gross_pay": exception.get("expected"),
+                        "adjustment_reason": "Minor calculation error auto-corrected",
+                        "requires_approval": False
+                    }
+                else:
+                    return {
+                        "success": True,
+                        "resolution": "escalation_required",
+                        "requires_approval": True,
+                        "escalation_reason": f"Large variance of ${variance} requires manual review"
+                    }
+            
+            elif exception_type == "excessive_overtime":
+                return {
+                    "success": True,
+                    "resolution": "manager_approval_required",
+                    "requires_approval": True,
+                    "escalation_reason": "Overtime exceeds policy limits"
+                }
+            
+            elif exception_type == "excessive_deductions":
+                return {
+                    "success": True,
+                    "resolution": "hr_review_required",
+                    "requires_approval": True,
+                    "escalation_reason": "Deductions exceed acceptable percentage"
+                }
+            
+            else:
+                return {
+                    "success": True,
+                    "resolution": "manual_review",
+                    "requires_approval": True,
+                    "escalation_reason": "Unknown exception type requires manual review"
+                }
+                
+        except Exception as e:
+            logger.error(f"Error resolving payroll exception: {str(e)}")
+            return {"success": False, "error": str(e)}
 
 # Workflow Orchestrator Instance
 workflow_orchestrator = WorkflowOrchestrator()
