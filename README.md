@@ -1,4 +1,4 @@
-# Laravel Business Boilerplate
+# CrewHR : AI Driven Laravel HR System 
 
 A comprehensive Laravel boilerplate application for business scenarios with PostgreSQL integration, featuring advanced authentication, workflow engine, real-time notifications, file storage, multi-language support, and **AI-powered automation system**.
 
