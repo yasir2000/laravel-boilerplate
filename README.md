@@ -1,3 +1,5 @@
+<img width="341" height="141" alt="image" src="https://github.com/user-attachments/assets/af298e0e-e707-4089-8181-9762edf0974b" />
+
 # CrewHR : AI Driven Laravel HR System 
 
 A comprehensive Laravel boilerplate application for business scenarios with PostgreSQL integration, featuring advanced authentication, workflow engine, real-time notifications, file storage, multi-language support, and **AI-powered automation system**.
