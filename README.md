@@ -1,4 +1,4 @@
-<img width="341" height="141" alt="image" src="https://github.com/user-attachments/assets/af298e0e-e707-4089-8181-9762edf0974b" />
+<img width="354" height="134" alt="image" src="https://github.com/user-attachments/assets/4cf0f10b-2ac8-4503-8dad-fde63957a582" />
 
 # CrewHR : AI Driven Laravel HR System 
 
