@@ -8,9 +8,13 @@ A comprehensive Laravel boilerplate application for business scenarios with Post
 
 ### 🤖 AI Agents System (NEW!)
 - **12 Specialized AI Agents** - CrewAI-powered automation for HR workflows
+- **Multi-LLM Support** - OpenAI, Anthropic, Google, Mistral, and Ollama local models
 - **8 Workflow Types** - Automated employee onboarding, leave management, performance reviews
 - **Real-time Dashboard** - Monitor agent status, system health, and workflow progress
 - **Intelligent Processing** - Natural language query processing and smart task automation
+- **Load Balancing** - Automatic failover and cost optimization across providers
+- **Local Models** - Ollama integration for privacy-focused, offline AI capabilities
+- **Cost Management** - Built-in budget tracking and cost optimization
 - **Integration Layer** - Seamless integration with existing HR modules
 
 ### Core Business Features
@@ -88,6 +92,11 @@ A comprehensive Laravel boilerplate application for business scenarios with Post
 ### 🤖 AI Technology Stack
 
 - **CrewAI Framework:** Multi-agent collaboration and orchestration
+- **Multi-LLM Architecture:** Support for OpenAI, Anthropic, Google AI, Mistral, and Ollama
+- **Load Balancing:** Intelligent provider selection with failover
+- **Caching System:** Response caching with similarity matching
+- **Cost Management:** Budget tracking and optimization
+- **Monitoring:** Comprehensive metrics and health monitoring
 - **Laravel Integration:** Native PHP integration layer
 - **Real-time Communication:** WebSocket connections for live updates
 - **ExtJS Dashboard:** Rich interactive dashboard for monitoring
@@ -107,13 +116,18 @@ A comprehensive Laravel boilerplate application for business scenarios with Post
 git clone https://github.com/yasir2000/laravel-boilerplate.git
 cd laravel-boilerplate
 
-# 2. Copy environment file
+# 2. Copy environment files
 cp .env.example .env
+cp .env.llm.example .env.llm
 
-# 3. Start Laravel Sail containers
+# 3. Configure your AI/LLM settings
+# Edit .env.llm with your API keys and preferences
+nano .env.llm
+
+# 4. Start Laravel Sail containers
 docker-compose up -d
 
-# 4. Install dependencies and setup
+# 5. Install dependencies and setup
 docker-compose exec laravel.test composer install
 docker-compose exec laravel.test php artisan key:generate
 docker-compose exec laravel.test php artisan migrate
@@ -440,6 +454,106 @@ The application uses the following main entities:
 - Priority and status management
 - Time estimation and logging
 
+## 🧠 Multi-LLM Configuration
+
+### Supported Providers
+
+The system supports multiple LLM providers with seamless switching and load balancing:
+
+#### Cloud Providers
+- **OpenAI**: GPT-4o, GPT-4o-mini, GPT-3.5-turbo
+- **Anthropic**: Claude-3.5-sonnet, Claude-3.5-haiku, Claude-3-opus
+- **Google AI**: Gemini-1.5-pro, Gemini-1.5-flash
+- **Mistral**: Mistral-large-latest, mistral-small-latest
+
+#### Local Providers
+- **Ollama**: llama3.2, llama3.1, codellama, mistral, neural-chat, phi3
+
+### Configuration
+
+1. **Copy the LLM configuration file:**
+```bash
+cp .env.llm.example .env.llm
+```
+
+2. **Configure your API keys in `.env.llm`:**
+```env
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_ORGANIZATION=your_organization_id
+
+# Anthropic Configuration
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# Google AI Configuration
+GOOGLE_AI_API_KEY=your_google_ai_key
+
+# Mistral Configuration
+MISTRAL_API_KEY=your_mistral_api_key
+
+# Ollama Configuration (Local)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_AUTO_PULL=true
+```
+
+3. **Configure agent-specific LLM assignments:**
+```env
+# Assign specific models to agents
+LLM_HR_AGENT_MODEL=gpt-4o
+LLM_PROJECT_MANAGER_MODEL=claude-3.5-sonnet
+LLM_ANALYTICS_AGENT_MODEL=gemini-1.5-pro
+LLM_WORKFLOW_ENGINE_MODEL=llama3.2
+```
+
+### Features
+
+#### Load Balancing
+- **Round Robin**: Equal distribution across providers
+- **Least Cost**: Prioritize cheaper models
+- **Fastest Response**: Use fastest responding providers
+- **Weighted**: Custom weight distribution
+
+#### Cost Management
+- **Budget Limits**: Daily and monthly spending limits
+- **Cost Tracking**: Real-time cost monitoring
+- **Alerts**: Budget threshold notifications
+- **Usage Analytics**: Detailed cost breakdowns
+
+#### Caching
+- **Smart Caching**: Similar request detection
+- **Cost Savings**: Reduce API calls for similar queries
+- **Configurable TTL**: Flexible cache expiration
+
+#### Monitoring
+- **Health Checks**: Provider availability monitoring
+- **Performance Metrics**: Response time tracking
+- **Error Handling**: Automatic failover
+- **Usage Statistics**: Comprehensive analytics
+
+### Local Ollama Setup
+
+For privacy-focused, offline AI capabilities:
+
+1. **Install Ollama:**
+```bash
+# Download from https://ollama.ai
+curl -fsSL https://ollama.ai/install.sh | sh
+```
+
+2. **Pull models:**
+```bash
+ollama pull llama3.2
+ollama pull codellama
+ollama pull mistral
+```
+
+3. **Configure in `.env.llm`:**
+```env
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_AUTO_PULL=true
+OLLAMA_DEFAULT_MODEL=llama3.2
+```
+
 ## Best Practices Implemented
 
 1. **Repository Pattern**: Service classes for business logic
@@ -449,7 +563,9 @@ The application uses the following main entities:
 5. **Activity Logging**: Comprehensive audit trail
 6. **API Responses**: Consistent JSON response format
 7. **Error Handling**: Graceful error responses
-8. **Code Organization**: Clean, maintainable code structure
+8. **Multi-LLM Architecture**: Provider abstraction and intelligent routing
+9. **Cost Optimization**: Intelligent caching and budget management
+10. **Code Organization**: Clean, maintainable code structure
 
 ## Testing
 

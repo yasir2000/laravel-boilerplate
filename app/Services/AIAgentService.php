@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use App\Services\LLM\LLMManager;
+use App\Services\LLM\Models\LLMRequest;
+use App\Services\LLM\Models\LLMResponse;
+use App\Services\LLM\Exceptions\LLMException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -11,11 +15,13 @@ class AIAgentService
 {
     protected $baseUrl;
     protected $timeout;
+    protected LLMManager $llmManager;
     
-    public function __construct()
+    public function __construct(LLMManager $llmManager = null)
     {
         $this->baseUrl = config('ai_agents.base_url', 'http://localhost:8001');
         $this->timeout = config('ai_agents.timeout', 30);
+        $this->llmManager = $llmManager ?? new LLMManager();
     }
     
     /**
@@ -258,6 +264,308 @@ class AIAgentService
         return $this->executeAgentTask($agentType, "handle_model_event", $taskData);
     }
     
+    /**
+     * Generate AI completion using multi-LLM system
+     */
+    public function generateCompletion(string $prompt, string $agentName = null, array $options = []): LLMResponse
+    {
+        try {
+            $request = LLMRequest::completion($prompt, $options);
+            
+            if ($agentName) {
+                return $this->llmManager->completeForAgent($agentName, $request);
+            }
+            
+            return $this->llmManager->complete($request);
+        } catch (LLMException $e) {
+            Log::error("AI completion failed: " . $e->getMessage(), [
+                'agent' => $agentName,
+                'prompt_length' => strlen($prompt),
+                'options' => $options
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Generate chat completion
+     */
+    public function generateChatCompletion(array $messages, string $agentName = null, array $options = []): LLMResponse
+    {
+        try {
+            $request = LLMRequest::chat($messages, $options);
+            
+            if ($agentName) {
+                return $this->llmManager->completeForAgent($agentName, $request);
+            }
+            
+            return $this->llmManager->complete($request);
+        } catch (LLMException $e) {
+            Log::error("AI chat completion failed: " . $e->getMessage(), [
+                'agent' => $agentName,
+                'messages_count' => count($messages),
+                'options' => $options
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Stream AI completion for real-time responses
+     */
+    public function streamCompletion(string $prompt, callable $callback, string $agentName = null, array $options = []): void
+    {
+        try {
+            $request = LLMRequest::completion($prompt, $options);
+            
+            if ($agentName) {
+                $agentMapping = config('ai_agents.llm_providers.agent_llm_mapping.' . $agentName);
+                $preferredProvider = $agentMapping ? explode(':', $agentMapping['primary'])[0] : null;
+                $this->llmManager->stream($request, $callback, $preferredProvider);
+            } else {
+                $this->llmManager->stream($request, $callback);
+            }
+        } catch (LLMException $e) {
+            Log::error("AI streaming failed: " . $e->getMessage(), [
+                'agent' => $agentName,
+                'prompt_length' => strlen($prompt)
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Execute function calling with AI
+     */
+    public function executeFunctionCall(array $messages, array $functions, string $agentName = null, array $options = []): LLMResponse
+    {
+        try {
+            $request = LLMRequest::functionCall($messages, $functions, $options);
+            
+            if ($agentName) {
+                return $this->llmManager->completeForAgent($agentName, $request);
+            }
+            
+            return $this->llmManager->complete($request);
+        } catch (LLMException $e) {
+            Log::error("AI function calling failed: " . $e->getMessage(), [
+                'agent' => $agentName,
+                'functions_count' => count($functions),
+                'messages_count' => count($messages)
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get LLM system status
+     */
+    public function getLLMStatus(): array
+    {
+        try {
+            return [
+                'enabled' => true,
+                'providers' => $this->llmManager->getProvidersStatus(),
+                'usage_stats' => $this->llmManager->getUsageStatistics(7),
+                'cost_analysis' => $this->llmManager->getCostAnalysis(30),
+            ];
+        } catch (\Exception $e) {
+            Log::error("Failed to get LLM status: " . $e->getMessage());
+            return [
+                'enabled' => false,
+                'error' => $e->getMessage(),
+                'providers' => [],
+                'usage_stats' => [],
+                'cost_analysis' => [],
+            ];
+        }
+    }
+
+    /**
+     * Get available models across all providers
+     */
+    public function getAvailableModels(): array
+    {
+        try {
+            return $this->llmManager->getAvailableModels();
+        } catch (\Exception $e) {
+            Log::error("Failed to get available models: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Perform health check on all LLM providers
+     */
+    public function performLLMHealthCheck(): array
+    {
+        try {
+            return $this->llmManager->healthCheck();
+        } catch (\Exception $e) {
+            Log::error("LLM health check failed: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Generate smart response for HR queries
+     */
+    public function generateHRResponse(string $query, array $context = []): array
+    {
+        try {
+            $systemPrompt = "You are an AI HR assistant. Provide helpful, accurate, and professional responses to HR-related queries. Consider company policies, employment law, and best practices.";
+            
+            $messages = [
+                ['role' => 'system', 'content' => $systemPrompt],
+                ['role' => 'user', 'content' => $query]
+            ];
+
+            if (!empty($context)) {
+                $contextStr = "Context: " . json_encode($context);
+                $messages[] = ['role' => 'system', 'content' => $contextStr];
+            }
+
+            $response = $this->generateChatCompletion($messages, 'hr_agent', [
+                'temperature' => 0.7,
+                'max_tokens' => 1000,
+            ]);
+
+            return [
+                'success' => true,
+                'response' => $response->getContent(),
+                'model' => $response->getModel(),
+                'provider' => $response->getProvider(),
+                'cost' => $response->getCost(),
+                'tokens_used' => $response->getTokensUsed(),
+            ];
+        } catch (\Exception $e) {
+            Log::error("HR response generation failed: " . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Analyze employee data with AI
+     */
+    public function analyzeEmployeeData(array $employeeData, string $analysisType = 'general'): array
+    {
+        try {
+            $systemPrompt = match($analysisType) {
+                'performance' => "Analyze employee performance data and provide insights on strengths, areas for improvement, and recommendations.",
+                'engagement' => "Analyze employee engagement data and identify factors affecting satisfaction and retention.",
+                'productivity' => "Analyze productivity metrics and suggest optimization strategies.",
+                default => "Analyze the provided employee data and generate actionable insights."
+            };
+
+            $dataStr = json_encode($employeeData, JSON_PRETTY_PRINT);
+            $prompt = "Please analyze the following employee data:\n\n{$dataStr}\n\nProvide insights and recommendations.";
+
+            $response = $this->generateCompletion($prompt, 'analytics_agent', [
+                'system_prompt' => $systemPrompt,
+                'temperature' => 0.3, // Lower temperature for analytical tasks
+                'max_tokens' => 1500,
+            ]);
+
+            return [
+                'success' => true,
+                'analysis' => $response->getContent(),
+                'analysis_type' => $analysisType,
+                'model' => $response->getModel(),
+                'provider' => $response->getProvider(),
+                'quality_score' => $response->getQualityScore(),
+            ];
+        } catch (\Exception $e) {
+            Log::error("Employee data analysis failed: " . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Generate automated reports with AI
+     */
+    public function generateAutomatedReport(string $reportType, array $data, array $options = []): array
+    {
+        try {
+            $templates = [
+                'weekly_summary' => "Generate a comprehensive weekly HR summary report based on the provided data. Include key metrics, trends, and actionable insights.",
+                'performance_review' => "Create a detailed performance review report analyzing employee performance data, highlighting achievements and areas for development.",
+                'compliance_audit' => "Generate a compliance audit report reviewing HR policies, procedures, and regulatory adherence.",
+                'recruitment_analysis' => "Analyze recruitment data and generate insights on hiring effectiveness, candidate quality, and process improvements.",
+            ];
+
+            $systemPrompt = $templates[$reportType] ?? $templates['weekly_summary'];
+            $dataStr = json_encode($data, JSON_PRETTY_PRINT);
+            
+            $prompt = "Generate a {$reportType} report based on this data:\n\n{$dataStr}";
+
+            $response = $this->generateCompletion($prompt, 'report_generator', array_merge([
+                'system_prompt' => $systemPrompt,
+                'temperature' => 0.4,
+                'max_tokens' => 2000,
+            ], $options));
+
+            return [
+                'success' => true,
+                'report' => $response->getContent(),
+                'report_type' => $reportType,
+                'generated_at' => now()->toISOString(),
+                'model' => $response->getModel(),
+                'provider' => $response->getProvider(),
+                'word_count' => str_word_count($response->getContent()),
+            ];
+        } catch (\Exception $e) {
+            Log::error("Automated report generation failed: " . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Process natural language queries about company data
+     */
+    public function processNaturalLanguageQuery(string $query, array $availableData = []): array
+    {
+        try {
+            $systemPrompt = "You are an AI assistant that helps users query and understand company data. Interpret natural language questions and provide relevant insights from the available data.";
+            
+            $contextStr = "";
+            if (!empty($availableData)) {
+                $contextStr = "\n\nAvailable data types: " . implode(', ', array_keys($availableData));
+            }
+
+            $fullPrompt = $query . $contextStr;
+
+            $response = $this->generateCompletion($fullPrompt, 'analytics_agent', [
+                'system_prompt' => $systemPrompt,
+                'temperature' => 0.5,
+                'max_tokens' => 1000,
+            ]);
+
+            return [
+                'success' => true,
+                'interpretation' => $response->getContent(),
+                'query' => $query,
+                'model' => $response->getModel(),
+                'provider' => $response->getProvider(),
+                'confidence' => $response->getQualityScore() / 100,
+            ];
+        } catch (\Exception $e) {
+            Log::error("Natural language query processing failed: " . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
     /**
      * Get cached workflow status
      */
